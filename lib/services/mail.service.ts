@@ -1,5 +1,6 @@
 import axios, { isAxiosError } from "axios";
 
+import { settingsRepository } from "@/lib/db/repositories/settings.repository";
 import { getEnvironment } from "@/lib/env";
 import type { AsyncResult } from "@/lib/types/content";
 
@@ -22,37 +23,73 @@ function escapeHtml(value: string): string {
 class MailService {
   appName: string = "Tumedia";
   sender: MailServiceConfig["sender"] = {
-    name: "no-reply",
-    email: "ifeanyi@thetumedia.com",
+    name: getEnvironment().SENDER_NAME,
+    email: `${getEnvironment().MAIL_FROM}@mail.thetumedia.com`,
   };
 
   constructor(private readonly config?: MailServiceConfig) {
-    this.appName = config?.appName || this.appName;
-    this.sender = config?.sender || this.sender;
+    this.appName = this.config?.appName || this.appName;
+    this.sender = this.config?.sender || this.sender;
   }
 
-  async send(message: MailMessage): Promise<AsyncResult<{ messageId?: string }>> {
+  private async getSender(): Promise<MailServiceConfig["sender"]> {
     try {
-      const response = await axios.post<{ messageId?: string }>("https://api.brevo.com/v3/smtp/email", {
-        sender: this.sender,
-        to: [{ email: message.to }],
-        subject: message.subject,
-        textContent: message.text,
-        htmlContent: message.html,
-      }, {
-        headers: {
-          "api-key": getEnvironment().BREVO_API_KEY,
-          "content-type": "application/json",
+      const config = await settingsRepository.getMailServiceSettings();
+      if (config) {
+        return {
+          name: config.senderName,
+          email: config.mailFrom.includes("@")
+            ? config.mailFrom
+            : `${config.mailFrom}@mail.thetumedia.com`,
+        };
+      }
+    } catch (error) {
+      console.error("Mail service settings lookup failed", { error });
+    }
+
+    return this.sender;
+  }
+
+  async send(
+    message: MailMessage
+  ): Promise<AsyncResult<{ messageId?: string }>> {
+    try {
+      const sender = await this.getSender();
+      const response = await axios.post<{ messageId?: string }>(
+        "https://api.brevo.com/v3/smtp/email",
+        {
+          sender,
+          to: [{ email: message.to }],
+          subject: message.subject,
+          textContent: message.text,
+          htmlContent: message.html,
         },
-      });
+        {
+          headers: {
+            "api-key": getEnvironment().BREVO_API_KEY,
+            "content-type": "application/json",
+          },
+        }
+      );
       return { success: "Email sent.", data: response.data };
     } catch (caught) {
       console.error("Brevo email delivery failed", caught);
-      return { error: isAxiosError(caught) && caught.response?.status === 401 ? "Email delivery is not configured correctly." : "We could not send that email. Please try again shortly." };
+      return {
+        error:
+          isAxiosError(caught) && caught.response?.status === 401
+            ? "Email delivery is not configured correctly."
+            : "We could not send that email. Please try again shortly.",
+      };
     }
   }
 
-  async sendMagicLinkEmail({ to, url }: { to: string; url: string }): Promise<AsyncResult<{ messageId?: string }>> {
+  async sendMagicLinkEmail({
+    to,
+    url,
+  }: {
+    to: string;
+    url: string;
+  }): Promise<AsyncResult<{ messageId?: string }>> {
     return this.send({
       to,
       subject: `Sign in to ${this.appName}`,

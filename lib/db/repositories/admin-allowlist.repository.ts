@@ -22,7 +22,7 @@ class AdminAllowlistRepository extends BaseRepository<AdminAllowlistDocument> {
   private environmentSeeded = false;
   private readonly cacheKey = "tu-media-cms:v1:auth:allowlist";
   private readonly memoryCacheTtlMs = 60_000;
-  private readonly redisCacheTtlSeconds = 7 * 24 * 60 * 60;
+  private readonly redisCacheTtlSeconds = 365 * 24 * 60 * 60;
 
   private environmentEmails(): string[] {
     return (getEnvironment().DEFAULT_ADMIN_EMAILS ?? "")
