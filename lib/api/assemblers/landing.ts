@@ -1,0 +1,3 @@
+import type { PublicLanding } from "@/lib/types/landing";
+import { landingRepository } from "@/lib/db/repositories/landing.repository";
+export async function assembleLanding(): Promise<PublicLanding> { const content = await landingRepository.get(); const { seo, hero, positioning, process, creatorFlowCta, industriesPreview, videoShowcase, whyTuMedia, blogPreview, faq, finalCta } = content; return { page: "landing", seo, sections: { hero, positioning, process, creatorFlowCta, industriesPreview, videoShowcase, whyTuMedia, blogPreview, faq, finalCta }, updatedAt: content.updatedAt.toISOString() }; }
