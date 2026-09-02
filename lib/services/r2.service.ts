@@ -39,6 +39,16 @@ export function getR2Client(): S3Client {
   });
 }
 
+function normalisePublicBaseUrl(value: string): string {
+  const url = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  return url.replace(/\/$/, "");
+}
+
+export function getR2PublicUrl(key: string): string {
+  const environment = requiredR2Environment();
+  return `${normalisePublicBaseUrl(environment.R2_PUBLIC_BASE_URL)}/${key}`;
+}
+
 function safeFilename(filename: string): string {
   return filename
     .toLowerCase()
@@ -63,7 +73,7 @@ export async function createPresignedUpload(input: PresignUploadInput) {
   return {
     key,
     uploadUrl,
-    publicUrl: `${environment.R2_PUBLIC_BASE_URL.replace(/\/$/, "")}/${key}`,
+    publicUrl: getR2PublicUrl(key),
   };
 }
 

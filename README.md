@@ -134,6 +134,7 @@ CMS mutations update MongoDB first and then invalidate the exact affected cache 
 
 R2 stores CMS-managed images and video assets.
 
+
 Recommended flow:
 
 1. Authenticated Server Action validates requested upload metadata.

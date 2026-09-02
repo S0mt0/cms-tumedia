@@ -4,6 +4,7 @@ import { Save } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { FormFeedback } from "@/components/forms/form-feedback";
+import { notifyActionResult } from "@/components/common/action-toast";
 import { ModuleCard } from "@/components/common/module-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,7 +103,9 @@ function LandingFields({
             onChange={(event) =>
               onChange(
                 path,
-                typeof value === "number" ? Number(event.target.value) : event.target.value
+                typeof value === "number"
+                  ? Number(event.target.value)
+                  : event.target.value
               )
             }
             className="mt-2 h-11 bg-white"
@@ -151,7 +154,10 @@ function LandingFields({
               ["description", "imageWordmark", "mediaCaption"].includes(key);
 
             return (
-              <div className={fullWidth ? "md:col-span-2" : undefined} key={key}>
+              <div
+                className={fullWidth ? "md:col-span-2" : undefined}
+                key={key}
+              >
                 {grouped ? (
                   <section className="border border-[#c5d4cd] bg-[#f6faf8] p-4">
                     <h3 className="mb-4 text-sm font-semibold text-[#163a37]">
@@ -201,6 +207,7 @@ export function LandingSectionEditor({
     startTransition(async () => {
       const nextResult = await updateLandingSection({ section, data: draft });
       setResult(nextResult);
+      notifyActionResult(nextResult);
     });
   }
 
@@ -218,8 +225,8 @@ export function LandingSectionEditor({
               value={draft}
               path={[]}
               onChange={(path, next) =>
-                setDraft((current) =>
-                  updateAt(current, path, next) as typeof current
+                setDraft(
+                  (current) => updateAt(current, path, next) as typeof current
                 )
               }
             />

@@ -13,7 +13,7 @@ INFRA_TIMEOUT ?= 60
 	help \
 	install \
 	install-frontend \
-	start \
+	infra-up \
 	stop \
 	clean \
 	restart \
@@ -44,7 +44,7 @@ install-frontend: ## Install frontend dependencies from the sibling project.
 	@test -d "$(FRONTEND_DIR)" || (echo "Frontend directory not found: $(FRONTEND_DIR)" && exit 1)
 	cd "$(FRONTEND_DIR)" && pnpm install
 
-start: ## Start local MongoDB and Redis in the background.
+infra-up: ## Start local MongoDB and Redis in the background.
 	docker compose up -d
 
 stop: ## Stop local MongoDB and Redis, preserving data volumes.

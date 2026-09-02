@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 
 import { FormFeedback } from "@/components/forms/form-feedback";
+import { notifyActionResult } from "@/components/common/action-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { saveGoogleSheetsSettings } from "@/lib/actions/settings.actions";
@@ -23,9 +24,11 @@ export function GoogleSheetsSettingsForm({
       className="max-w-2xl space-y-5"
       onSubmit={(event) => {
         event.preventDefault();
-        startTransition(async () =>
-          setResult(await saveGoogleSheetsSettings({ spreadsheetId }))
-        );
+        startTransition(async () => {
+          const next = await saveGoogleSheetsSettings({ spreadsheetId });
+          setResult(next);
+          notifyActionResult(next);
+        });
       }}
     >
       <label

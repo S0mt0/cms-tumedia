@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Save } from "lucide-react";
 import { FormFeedback } from "@/components/forms/form-feedback";
+import { notifyActionResult } from "@/components/common/action-toast";
 import { ModuleCard } from "@/components/common/module-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,7 +60,11 @@ export function SiteEditor({ initial }: { initial: SiteContent }) {
   const [result, setResult] = useState<ActionResult>();
   const [pending, startTransition] = useTransition();
   const save = () =>
-    startTransition(async () => setResult(await updateSite(draft)));
+    startTransition(async () => {
+      const next = await updateSite(draft);
+      setResult(next);
+      notifyActionResult(next);
+    });
   return (
     <form
       className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_17rem]"

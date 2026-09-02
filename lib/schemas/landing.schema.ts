@@ -3,8 +3,21 @@ const text = (max: number) => z.string().trim().min(1).max(max);
 const cta = z.object({ label: text(80), href: z.string().trim().startsWith("/").max(240) });
 const media = z.object({ url: z.string().trim().min(1).max(500), alt: z.string().trim().min(1).max(200) });
 const item = z.object({ id: z.string().min(1).max(100), order: z.number().int().min(0) });
+const heroCta = cta.extend({
+  id: z.string().min(1).max(100),
+  order: z.number().int().min(0).max(1),
+  variant: z.enum(["primary", "secondary"]),
+});
+export const heroBackgroundMediaSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("image"), url: z.string().trim().min(1).max(500), alt: text(200) }),
+  z.object({ type: z.literal("video"), url: z.string().trim().min(1).max(500), alt: z.string().trim().max(200).optional(), posterUrl: z.string().trim().min(1).max(500).optional() }),
+]);
 export const landingSectionSchemas = {
-  hero: z.object({ eyebrow: text(100), title: text(150), emphasis: text(150), description: text(500), primaryCta: cta, secondaryCta: cta, backgroundMedia: media, scrollLabel: text(80) }),
+  hero: z.object({ eyebrow: text(100), title: text(150), emphasis: text(150), description: text(500), ctas: z.array(heroCta).length(2).superRefine((ctas, context) => {
+    if (new Set(ctas.map((ctaItem) => ctaItem.id)).size !== 2) context.addIssue({ code: "custom", message: "Each call to action must have a unique identifier." });
+    if (new Set(ctas.map((ctaItem) => ctaItem.variant)).size !== 2) context.addIssue({ code: "custom", message: "Choose one primary and one secondary action." });
+    if (new Set(ctas.map((ctaItem) => ctaItem.order)).size !== 2) context.addIssue({ code: "custom", message: "Each call to action must have a unique position." });
+  }), backgroundMedia: heroBackgroundMediaSchema, scrollLabel: text(80) }),
   positioning: z.object({ title: text(160), description: text(700), cta, stats: z.array(item.extend({ value: text(50), label: text(120) })).min(1).max(6), marqueeItems: z.array(item.extend({ label: text(80) })).min(1).max(12) }),
   process: z.object({ eyebrow: text(100), title: text(160), description: text(700), cta, media, imageWordmark: text(100), steps: z.array(item.extend({ title: text(120) })).min(1).max(8) }),
   creatorFlowCta: z.object({ eyebrow: text(100), title: text(160), emphasis: text(160), description: text(700), cta, media, mediaCaption: text(180) }),

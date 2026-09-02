@@ -4,6 +4,7 @@ import IORedis from "ioredis";
 import { getEnvironment } from "@/lib/env";
 
 export type CacheClient = {
+  ping(): Promise<unknown>;
   get<T>(key: string): Promise<T | null>;
   set<T>(key: string, value: T, options?: { ex?: number }): Promise<unknown>;
   del(...keys: string[]): Promise<unknown>;
@@ -20,6 +21,10 @@ function createLocalRedisClient(url: string): CacheClient {
     if (client.status === "wait") await client.connect();
   };
   return {
+    async ping() {
+      await connect();
+      return client.ping();
+    },
     async get<T>(key: string) {
       await connect();
       const value = await client.get(key);
@@ -41,7 +46,25 @@ function createLocalRedisClient(url: string): CacheClient {
 async function createRedisClient(): Promise<CacheClient | null> {
   const environment = getEnvironment();
 
-  if (environment.UPSTASH_REDIS_REST_URL && environment.UPSTASH_REDIS_REST_TOKEN) {
+  if (process.env.NODE_ENV !== "production") {
+    if (!environment.REDIS_URL) return null;
+
+    const local = createLocalRedisClient(environment.REDIS_URL);
+    try {
+      await local.ping();
+      return local;
+    } catch (error) {
+      console.error("Local Redis health check failed; cache is unavailable in development.", {
+        error,
+      });
+      return null;
+    }
+  }
+
+  if (
+    environment.UPSTASH_REDIS_REST_URL &&
+    environment.UPSTASH_REDIS_REST_TOKEN
+  ) {
     const upstash = new Redis({
       url: environment.UPSTASH_REDIS_REST_URL,
       token: environment.UPSTASH_REDIS_REST_TOKEN,
@@ -51,13 +74,14 @@ async function createRedisClient(): Promise<CacheClient | null> {
       await upstash.ping();
       return upstash;
     } catch (error) {
-      console.error("Upstash Redis health check failed; using local Redis fallback.", {
+      console.error("Upstash Redis health check failed; cache is unavailable.", {
         error,
       });
     }
   }
 
-  return environment.REDIS_URL ? createLocalRedisClient(environment.REDIS_URL) : null;
+  console.warn("Upstash Redis is not configured; cache is unavailable.");
+  return null;
 }
 
 export function getRedisClient(): Promise<CacheClient | null> {

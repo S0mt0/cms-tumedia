@@ -8,6 +8,7 @@ import {
 import { landingRepository } from "@/lib/db/repositories/landing.repository";
 
 import { LandingSectionEditor } from "../_components/landing-section-editor";
+import { LandingHeroEditor } from "../_components/landing-hero-editor";
 
 type LandingSectionPageProps = {
   params: Promise<{ section: string }>;
@@ -40,12 +41,21 @@ export default async function LandingSectionPage({
       ]}
       previewHref={process.env.FRONTEND_BASE_URL ?? "http://localhost:3000"}
     >
-      <LandingSectionEditor
-        section={section.key}
-        title="Section content"
-        description="Edit the structured content that feeds this public landing-page section."
-        initial={initial}
-      />
+      {section.key === "hero" ? (
+        <LandingHeroEditor
+          initial={initial as typeof content.hero}
+          mediaPreviewBaseUrl={
+            process.env.FRONTEND_BASE_URL ?? "http://localhost:3001"
+          }
+        />
+      ) : (
+        <LandingSectionEditor
+          section={section.key}
+          title="Section content"
+          description="Edit the structured content that feeds this public landing-page section."
+          initial={initial}
+        />
+      )}
     </CmsEditorPageShell>
   );
 }
