@@ -7,7 +7,7 @@ export const PUBLIC_ROUTES = [
   "/auth/error",
 ] as const;
 
-export const DEFAULT_AUTH_REDIRECT = "/dashboard";
+export const DEFAULT_AUTH_REDIRECT = "/";
 
 export function isAuthRoute(pathname: string): boolean {
   return AUTH_ROUTES.some((route) => pathname.startsWith(route));

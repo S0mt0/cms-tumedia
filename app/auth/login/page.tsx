@@ -39,7 +39,7 @@ export default function LoginPage() {
         </p>
       </section>
       <section className="grid min-h-[calc(100vh-2rem)] place-items-center lg:min-h-screen">
-        <div className="w-full max-w-md rounded-2xl border bg-white p-6 sm:p-9">
+        <div className="w-full max-w-md rounded-sm border bg-white p-6 sm:p-9">
           <Image
             src="/logo-black.png"
             alt="TU Media"

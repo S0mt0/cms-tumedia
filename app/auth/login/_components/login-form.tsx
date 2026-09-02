@@ -12,15 +12,22 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth/client";
 import { getSafeCallbackUrl } from "@/lib/auth/routes";
-import { magicLinkSchema, type MagicLinkInput } from "@/lib/schemas/auth.schema";
+import {
+  magicLinkSchema,
+  type MagicLinkInput,
+} from "@/lib/schemas/auth.schema";
 
 type Feedback = { type: "error" | "success"; message: string };
 
 const authErrorCopy: Record<string, string> = {
-  FORBIDDEN: "This account is not authorised to access the CMS. Request access from an administrator if you need it.",
+  FORBIDDEN:
+    "This account is not authorised to access the CMS. Request access from an administrator if you need it.",
   unauthorized: "This account is not authorised to access the CMS.",
-  unable_to_create_user: "This account is not on the CMS administrator allowlist.",
-  access_denied: "Google sign-in was cancelled or access was declined. Please try again.",
+  unable_to_create_user:
+    "This account is not on the CMS administrator allowlist.",
+  access_denied:
+    "Google sign-in was cancelled or access was declined. Please try again.",
+  INVALID_TOKEN: "Session expired. Request another secure email link.",
 };
 
 function getUrlFeedback(searchParams: URLSearchParams): Feedback | undefined {
@@ -36,12 +43,18 @@ function getUrlFeedback(searchParams: URLSearchParams): Feedback | undefined {
   };
 }
 
-export function LoginForm({ accessRequestEmail }: { accessRequestEmail?: string }) {
+export function LoginForm({
+  accessRequestEmail,
+}: {
+  accessRequestEmail?: string;
+}) {
   const searchParams = useSearchParams();
   const [feedback, setFeedback] = useState<Feedback | undefined>(() =>
     getUrlFeedback(searchParams)
   );
-  const [submitting, setSubmitting] = useState<"google" | "link" | "none">("none");
+  const [submitting, setSubmitting] = useState<"google" | "link" | "none">(
+    "none"
+  );
   const callbackURL = getSafeCallbackUrl(searchParams.get("callbackUrl"));
   const form = useForm<MagicLinkInput>({
     resolver: zodResolver(magicLinkSchema),
@@ -110,7 +123,11 @@ export function LoginForm({ accessRequestEmail }: { accessRequestEmail?: string 
   }
 
   const accessRequestHref = accessRequestEmail
-    ? `mailto:${accessRequestEmail}?subject=${encodeURIComponent("TU Media CMS access request")}&body=${encodeURIComponent("Hello,\n\nPlease grant me access to the TU Media CMS.")}`
+    ? `mailto:${accessRequestEmail}?subject=${encodeURIComponent(
+        "TU Media CMS access request"
+      )}&body=${encodeURIComponent(
+        "Hello,\n\nPlease grant me access to the TU Media CMS."
+      )}`
     : undefined;
 
   return (
@@ -121,7 +138,13 @@ export function LoginForm({ accessRequestEmail }: { accessRequestEmail?: string 
         disabled={submitting !== "none"}
         className="h-11 w-full"
       >
-        {submitting === "google" ? <><Spinner /> Please wait…</> : "Continue with Google"}
+        {submitting === "google" ? (
+          <>
+            <Spinner /> Please wait…
+          </>
+        ) : (
+          "Continue with Google"
+        )}
       </Button>
       <div className="relative text-center text-xs text-slate-500 before:absolute before:inset-x-0 before:top-1/2 before:border-t before:border-slate-200">
         <span className="relative bg-white px-3">or</span>
@@ -134,13 +157,17 @@ export function LoginForm({ accessRequestEmail }: { accessRequestEmail?: string 
         }}
         noValidate
       >
-        <Label className="block text-slate-800" htmlFor="email">Work email</Label>
+        <Label className="block text-slate-800" htmlFor="email">
+          Work email
+        </Label>
         <Input
           id="email"
           type="email"
           autoComplete="email"
           aria-invalid={Boolean(form.formState.errors.email)}
-          aria-describedby={form.formState.errors.email ? "email-error" : undefined}
+          aria-describedby={
+            form.formState.errors.email ? "email-error" : undefined
+          }
           className="mt-2 h-11 rounded-xl border-slate-300 px-3"
           disabled={submitting !== "none"}
           onKeyDown={(event) => {
@@ -150,15 +177,37 @@ export function LoginForm({ accessRequestEmail }: { accessRequestEmail?: string 
           }}
           {...form.register("email")}
         />
-        {form.formState.errors.email ? <p id="email-error" className="text-sm text-red-700">{form.formState.errors.email.message}</p> : null}
-        <Button type="submit" disabled={submitting !== "none"} variant="outline" className="mt-3 h-11 w-full">
-          {submitting === "link" ? <><Spinner /> Please wait…</> : "Email me a sign-in link"}
+        {form.formState.errors.email ? (
+          <p id="email-error" className="text-sm text-red-700">
+            {form.formState.errors.email.message}
+          </p>
+        ) : null}
+        <Button
+          type="submit"
+          disabled={submitting !== "none"}
+          variant="outline"
+          className="mt-3 h-11 w-full"
+        >
+          {submitting === "link" ? (
+            <>
+              <Spinner /> Please wait…
+            </>
+          ) : (
+            "Email me a sign-in link"
+          )}
         </Button>
       </form>
       <FormMessage message={feedback?.message} variant={feedback?.type} />
       {accessRequestHref ? (
         <p className="text-center text-sm leading-6 text-slate-600">
-          Need access? <a href={accessRequestHref} className="font-semibold text-[#7047eb] underline underline-offset-4">Request access by email</a>.
+          Need access?{" "}
+          <a
+            href={accessRequestHref}
+            className="font-semibold text-[#7047eb] underline underline-offset-4"
+          >
+            Request access by email
+          </a>
+          .
         </p>
       ) : null}
     </div>

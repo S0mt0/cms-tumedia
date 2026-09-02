@@ -16,6 +16,6 @@ export async function updateLandingSection(input: unknown): Promise<ActionResult
   if (!sectionData.success) return { success: false, message: "Please correct the section fields.", fieldErrors: sectionData.error.flatten().fieldErrors };
   await landingRepository.updateSection(parsed.data.section, sectionData.data as never, session.user.id);
   await invalidateCache(cacheKeys.page("landing"));
-  revalidatePath("/landing");
+  revalidatePath(`/landing/${parsed.data.section}`);
   return { success: true, message: "Section saved." };
 }
