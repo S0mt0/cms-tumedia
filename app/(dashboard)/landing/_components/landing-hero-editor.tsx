@@ -12,10 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  updateLandingHeroBackgroundMedia,
-  updateLandingSection,
-} from "@/lib/actions/landing.actions";
+import { updateLandingSection } from "@/lib/actions/landing.actions";
 import type { ActionResult } from "@/lib/types/content";
 import type { LandingSections } from "@/lib/types/landing";
 
@@ -57,15 +54,14 @@ export function LandingHeroEditor({ initial, mediaPreviewBaseUrl }: LandingHeroE
     });
   }
 
-  async function persistBackgroundMedia(backgroundMedia: LandingSections["hero"]["backgroundMedia"]) {
+  async function selectBackgroundMedia(
+    backgroundMedia: LandingSections["hero"]["backgroundMedia"]
+  ) {
     setDraft((current) => ({ ...current, backgroundMedia }));
-    const next = await updateLandingHeroBackgroundMedia(backgroundMedia);
-    setResult(next);
-    notifyActionResult(next);
-    if (next.success) {
-      setPersisted((current) => ({ ...current, backgroundMedia }));
-    }
-    return next;
+    return {
+      success: true,
+      message: "Media selected. Save the hero section to publish it.",
+    };
   }
 
   return (
@@ -126,7 +122,7 @@ export function LandingHeroEditor({ initial, mediaPreviewBaseUrl }: LandingHeroE
           </aside>
         </div>
       </form>
-      <MediaUploadDialog baseUrl={mediaPreviewBaseUrl} disabled={readOnly} onOpenChange={setMediaDialogOpen} onSelect={persistBackgroundMedia} open={mediaDialogOpen} value={draft.backgroundMedia} />
+      <MediaUploadDialog baseUrl={mediaPreviewBaseUrl} disabled={readOnly} onOpenChange={setMediaDialogOpen} onSelect={selectBackgroundMedia} open={mediaDialogOpen} value={draft.backgroundMedia} />
     </section>
   );
 }

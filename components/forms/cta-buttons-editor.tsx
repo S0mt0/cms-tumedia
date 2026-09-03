@@ -1,24 +1,10 @@
 "use client";
 
-import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { ArrowDown, ArrowUp, GripVertical } from "lucide-react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
+import { SortableDndContainer } from "@/components/common/sortable-dnd-container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -172,10 +158,6 @@ export function CtaButtonsEditor({
   readOnly,
 }: CtaButtonsEditorProps) {
   const items = ordered(value);
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
 
   function update(id: string, changes: Partial<HeroCta>) {
     onChange(
@@ -205,20 +187,6 @@ export function CtaButtonsEditor({
     );
   }
 
-  function onDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIndex = items.findIndex((item) => item.id === active.id);
-    const newIndex = items.findIndex((item) => item.id === over.id);
-    if (oldIndex < 0 || newIndex < 0) return;
-    onChange(
-      arrayMove(items, oldIndex, newIndex).map((item, order) => ({
-        ...item,
-        order,
-      }))
-    );
-  }
-
   return (
     <fieldset className="rounded-md border border-[#c5d4cd] bg-[#f8fbf9] p-4 sm:p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -234,31 +202,27 @@ export function CtaButtonsEditor({
           {items.length} actions
         </span>
       </div>
-      <DndContext
-        collisionDetection={closestCenter}
-        onDragEnd={onDragEnd}
-        sensors={sensors}
-      >
-        <SortableContext
-          items={items.map((item) => item.id)}
-          strategy={verticalListSortingStrategy}
+      <div className="mt-4 space-y-3">
+        <SortableDndContainer
+          disabled={readOnly}
+          items={items}
+          onReorder={(nextItems) =>
+            onChange(nextItems.map((item, order) => ({ ...item, order })))
+          }
         >
-          <div className="mt-4 space-y-3">
-            {items.map((cta, index) => (
-              <SortableAction
-                cta={cta}
-                count={items.length}
-                index={index}
-                key={cta.id}
-                onMove={move}
-                onSetVariant={setVariant}
-                onUpdate={update}
-                readOnly={readOnly}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+          {(cta, index) => (
+            <SortableAction
+              cta={cta}
+              count={items.length}
+              index={index}
+              onMove={move}
+              onSetVariant={setVariant}
+              onUpdate={update}
+              readOnly={readOnly}
+            />
+          )}
+        </SortableDndContainer>
+      </div>
     </fieldset>
   );
 }

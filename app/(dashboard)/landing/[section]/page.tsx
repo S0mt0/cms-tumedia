@@ -54,6 +54,9 @@ export default async function LandingSectionPage({
           title="Section content"
           description="Edit the structured content that feeds this public landing-page section."
           initial={initial}
+          mediaPreviewBaseUrl={
+            process.env.FRONTEND_BASE_URL ?? "http://localhost:3001"
+          }
         />
       )}
     </CmsEditorPageShell>

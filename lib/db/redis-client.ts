@@ -54,9 +54,12 @@ async function createRedisClient(): Promise<CacheClient | null> {
       await local.ping();
       return local;
     } catch (error) {
-      console.error("Local Redis health check failed; cache is unavailable in development.", {
-        error,
-      });
+      console.error(
+        "Local Redis health check failed; cache is unavailable in development.",
+        {
+          error,
+        }
+      );
       return null;
     }
   }
@@ -74,9 +77,12 @@ async function createRedisClient(): Promise<CacheClient | null> {
       await upstash.ping();
       return upstash;
     } catch (error) {
-      console.error("Upstash Redis health check failed; cache is unavailable.", {
-        error,
-      });
+      console.error(
+        "Upstash Redis health check failed; cache is unavailable.",
+        {
+          error,
+        }
+      );
     }
   }
 

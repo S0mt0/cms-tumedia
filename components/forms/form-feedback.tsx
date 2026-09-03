@@ -8,5 +8,10 @@ type FormFeedbackProps = { result?: ActionResult };
 export function FormFeedback({ result }: FormFeedbackProps) {
   if (!result?.message) return null;
 
-  return <FormMessage message={result.message} variant={result.success ? "success" : "error"} />;
+  return (
+    <FormMessage
+      message={result.message}
+      variant={result.success ? "success" : "error"}
+    />
+  );
 }

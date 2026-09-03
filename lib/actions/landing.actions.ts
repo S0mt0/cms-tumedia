@@ -5,7 +5,7 @@ import { requireAdminSession } from "@/lib/auth/guards";
 import { invalidateCache } from "@/lib/cache/invalidation";
 import { cacheKeys } from "@/lib/cache/keys";
 import { landingRepository } from "@/lib/db/repositories/landing.repository";
-import { heroBackgroundMediaSchema, landingSectionSchemas, landingUpdateSchema } from "@/lib/schemas/landing.schema";
+import { landingSectionSchemas, landingUpdateSchema } from "@/lib/schemas/landing.schema";
 import type { ActionResult } from "@/lib/types/content";
 export async function updateLandingSection(input: unknown): Promise<ActionResult> {
   const session = await requireAdminSession();
@@ -18,15 +18,4 @@ export async function updateLandingSection(input: unknown): Promise<ActionResult
   await invalidateCache(cacheKeys.page("landing"));
   revalidatePath(`/landing/${parsed.data.section}`);
   return { success: true, message: "Section saved." };
-}
-
-export async function updateLandingHeroBackgroundMedia(input: unknown): Promise<ActionResult> {
-  const session = await requireAdminSession();
-  if (!(await isAdminEmail(session.user.email))) return { success: false, message: "Not authorised." };
-  const parsed = heroBackgroundMediaSchema.safeParse(input);
-  if (!parsed.success) return { success: false, message: "Please choose valid background media." };
-  await landingRepository.updateHeroBackgroundMedia(parsed.data, session.user.id);
-  await invalidateCache(cacheKeys.page("landing"));
-  revalidatePath("/landing/hero");
-  return { success: true, message: "Hero background saved." };
 }

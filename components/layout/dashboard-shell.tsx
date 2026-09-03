@@ -330,21 +330,29 @@ function CollapsedSidebar({
 
   return (
     <>
-      <div className="flex h-[76px] flex-col items-center justify-center gap-2 border-b border-[#c5d4cd] py-0">
-        <Link href="/" aria-label="TU Media CMS dashboard">
-          <Image src="/logo-icon.png" alt="" width={28} height={28} priority />
+      <div className="flex h-[76px] flex-col items-center justify-center gap-1 border-b border-[#c5d4cd] py-3">
+        <Link href="/" aria-label="TU Media CMS dashboard" className="mt-2">
+          <Image
+            src="/logo-icon.png"
+            alt=""
+            width={28}
+            height={28}
+            priority
+            className="w-10 h-10"
+          />
         </Link>
         <Button
           type="button"
           variant="ghost"
           size="icon"
           onClick={onExpand}
-          className="size-8 rounded-sm text-[#52605d] hover:bg-white/70 hover:text-[#163a37]"
+          className="size-8 rounded-sm text-[#52605d] hover:bg-white/70 hover:text-[#163a37] mb-3"
           aria-label="Expand navigation"
         >
-          <PanelLeftOpen className="size-4" />
+          <PanelLeftOpen className="size-5" />
         </Button>
       </div>
+
       <nav className="flex-1 px-2 py-4" aria-label="CMS navigation">
         <ul className="space-y-2">
           {items.map((item) => (

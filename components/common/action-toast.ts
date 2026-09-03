@@ -9,7 +9,7 @@ export function notifyActionResult(result: ActionResult) {
   else toast.error(result.message);
 }
 
-export function notifyAsyncResult(result: AsyncResult) {
+export function notifyAsyncResult<T>(result: AsyncResult<T>) {
   if (result.error) toast.error(result.error);
   else if (result.success) toast.success(result.success);
 }
