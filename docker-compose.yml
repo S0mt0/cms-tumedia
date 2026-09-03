@@ -10,6 +10,7 @@ services:
       MONGO_INITDB_DATABASE: tumedia
     volumes:
       - mongo_data:/data/db
+      - mongo_config_data:/data/configdb
     healthcheck:
       test:
         ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
@@ -23,6 +24,9 @@ services:
     depends_on:
       - mongodb
     restart: "no"
+    tmpfs:
+      - /data/db
+      - /data/configdb
     entrypoint: >
       bash -c "
         echo 'Waiting for MongoDB to start...';
@@ -71,4 +75,5 @@ services:
 
 volumes:
   mongo_data:
+  mongo_config_data:
   redis_data:

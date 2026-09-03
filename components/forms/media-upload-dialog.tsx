@@ -90,10 +90,14 @@ export function MediaUploadDialog({
 
   async function onFileChange(nextFile: File | undefined) {
     if (!nextFile) return;
+    setFile(null);
+    setPreviewUrl(null);
+    setPreviewStatus("idle");
     setPreparing(true);
     setError(undefined);
-    const prepared = await prepareMediaUpload(nextFile);
-    setPreparing(false);
+    const prepared = await prepareMediaUpload(nextFile).finally(() =>
+      setPreparing(false)
+    );
 
     if (!prepared.data) {
       setError(prepared.error);
@@ -310,23 +314,47 @@ export function MediaUploadDialog({
                   </div>
                 </div>
                 <div className="overflow-hidden rounded-md">
-                  <MediaPreview
-                    baseUrl={baseUrl}
-                    className={showKindChooser ? "h-48" : "h-64"}
-                    emptyLabel="Your selected media will preview here."
-                    media={
-                      previewUrl
-                        ? { type: kind, url: previewUrl, alt }
-                        : kind === value.type
-                        ? { ...value, alt }
-                        : undefined
-                    }
-                    onStatusChange={(status) => {
-                      if (previewUrl) {
-                        setPreviewStatus(status === "empty" ? "idle" : status);
+                  {preparing ? (
+                    <div
+                      aria-live="polite"
+                      className={`grid place-items-center border border-dashed border-[#b7c8c0] bg-[#f4f7f5] px-5 text-center text-[#52736a] ${
+                        showKindChooser ? "h-48" : "h-64"
+                      }`}
+                    >
+                      <div>
+                        <LoaderCircle
+                          className="mx-auto size-7 animate-spin text-[#176d64]"
+                          aria-hidden
+                        />
+                        <p className="mt-3 text-sm font-semibold text-[#163a37]">
+                          {kind === "image"
+                            ? "Optimising your image…"
+                            : "Preparing your video…"}
+                        </p>
+                        <p className="mt-1 text-xs leading-5">
+                          This can take a moment for larger files.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <MediaPreview
+                      baseUrl={baseUrl}
+                      className={showKindChooser ? "h-48" : "h-64"}
+                      emptyLabel="Your selected media will preview here."
+                      media={
+                        previewUrl
+                          ? { type: kind, url: previewUrl, alt }
+                          : kind === value.type
+                          ? { ...value, alt }
+                          : undefined
                       }
-                    }}
-                  />
+                      onStatusChange={(status) => {
+                        if (previewUrl) {
+                          setPreviewStatus(status === "empty" ? "idle" : status);
+                        }
+                      }}
+                    />
+                  )}
                 </div>
               </div>
 

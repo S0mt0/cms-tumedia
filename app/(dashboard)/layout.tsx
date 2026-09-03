@@ -11,7 +11,11 @@ export default async function DashboardLayout({
   const session = await requireAdminSession();
 
   return (
-    <DashboardShell email={session.user.email} name={session.user.name}>
+    <DashboardShell
+      email={session.user.email}
+      name={session.user.name}
+      image={session.user.image}
+    >
       {children}
     </DashboardShell>
   );

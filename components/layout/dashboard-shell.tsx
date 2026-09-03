@@ -17,6 +17,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useId, useState, useSyncExternalStore } from "react";
 
 import { LogoutButton } from "@/components/layout/logout-button";
+import { UserAvatar } from "@/components/common/user-avatar";
 import { Button } from "@/components/ui/button";
 import { landingSectionDefinitions } from "@/lib/constants/landing-sections";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,7 @@ type DashboardShellProps = {
   children: React.ReactNode;
   email: string;
   name: string;
+  image?: string | null;
 };
 
 function isActive(pathname: string, href: string) {
@@ -182,22 +184,17 @@ function SidebarContent({
   pathname,
   email,
   name,
+  image,
   onNavigate,
   onCollapse,
 }: {
   pathname: string;
   email: string;
   name: string;
+  image?: string | null;
   onNavigate?: () => void;
   onCollapse?: () => void;
 }) {
-  const initials = name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   return (
     <>
       <div className="flex h-[76px] items-center justify-between border-b border-[#c5d4cd] px-5">
@@ -230,9 +227,7 @@ function SidebarContent({
           onClick={onNavigate}
           className="flex items-center gap-3 rounded-md border border-[#c5d4cd] bg-white/75 p-3 outline-none transition-colors hover:border-[#8da89d] focus-visible:ring-2 focus-visible:ring-[#1d8f7a]"
         >
-          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#e4f2ee] text-xs font-bold text-[#176b5a]">
-            {initials}
-          </span>
+          <UserAvatar name={name} image={image} className="size-9" />
           <span className="min-w-0">
             <span className="block truncate text-sm font-semibold text-[#171a1f]">
               {name}
@@ -310,18 +305,14 @@ function CollapsedNavLink({
 function CollapsedSidebar({
   pathname,
   name,
+  image,
   onExpand,
 }: {
   pathname: string;
   name: string;
+  image?: string | null;
   onExpand: () => void;
 }) {
-  const initials = name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
   const items: NavItem[] = [
     { href: "/", label: "Overview", icon: LayoutDashboard },
     { href: "/landing/hero", label: "Landing page", icon: FilePenLine },
@@ -363,18 +354,23 @@ function CollapsedSidebar({
       <div className="border-t border-[#c5d4cd] p-2">
         <Link
           href="/profile"
-          className="grid size-11 place-items-center rounded-full border border-[#c5d4cd] bg-white/75 text-xs font-bold text-[#176b5a] outline-none transition-colors hover:border-[#8da89d] focus-visible:ring-2 focus-visible:ring-[#1d8f7a]"
+          className="size-11 overflow-hidden rounded-full border border-[#c5d4cd] bg-white/75 outline-none transition-colors hover:border-[#8da89d] focus-visible:ring-2 focus-visible:ring-[#1d8f7a]"
           aria-label="Open profile"
           title="Profile"
         >
-          {initials}
+          <UserAvatar name={name} image={image} className="size-full" />
         </Link>
       </div>
     </>
   );
 }
 
-export function DashboardShell({ children, email, name }: DashboardShellProps) {
+export function DashboardShell({
+  children,
+  email,
+  name,
+  image,
+}: DashboardShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, toggleCollapsed] = usePersistedDisclosure(
@@ -394,6 +390,7 @@ export function DashboardShell({ children, email, name }: DashboardShellProps) {
           <CollapsedSidebar
             pathname={pathname}
             name={name}
+            image={image}
             onExpand={toggleCollapsed}
           />
         ) : (
@@ -401,6 +398,7 @@ export function DashboardShell({ children, email, name }: DashboardShellProps) {
             pathname={pathname}
             email={email}
             name={name}
+            image={image}
             onCollapse={toggleCollapsed}
           />
         )}
@@ -452,6 +450,7 @@ export function DashboardShell({ children, email, name }: DashboardShellProps) {
               pathname={pathname}
               email={email}
               name={name}
+              image={image}
               onNavigate={() => setMobileOpen(false)}
             />
           </aside>
