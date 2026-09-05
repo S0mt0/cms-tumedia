@@ -4,6 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   FilePenLine,
+  Sparkles,
+  Target,
+  Layers3,
+  BookOpenText,
+  Globe2,
+  Route,
+  Flag,
+  GalleryVerticalEnd,
+  MessageCircleQuestion,
   LayoutDashboard,
   Menu,
   PanelLeftClose,
@@ -28,6 +37,29 @@ const pageItems: NavItem[] = [
   { href: "/site", label: "Site & footer", icon: SlidersHorizontal },
   { href: "/settings", label: "Settings", icon: Settings2 },
 ];
+
+const aboutSectionDefinitions = [
+  { path: "hero", label: "Hero" },
+  { path: "why-we-exist", label: "Why we exist" },
+  { path: "our-perspective", label: "Our perspective" },
+  { path: "our-difference", label: "Our difference" },
+  { path: "our-story", label: "Our story" },
+  { path: "global-capability", label: "Global capability" },
+  { path: "audience-paths", label: "Audience paths" },
+  { path: "closing", label: "Closing" },
+] as const;
+
+const aboutIcons: Record<(typeof aboutSectionDefinitions)[number]["path"], LucideIcon> = {
+  hero: Sparkles, "why-we-exist": Target, "our-perspective": Layers3,
+  "our-difference": Route, "our-story": BookOpenText, "global-capability": Globe2,
+  "audience-paths": GalleryVerticalEnd, closing: Flag,
+};
+
+const landingIcons: Record<string, LucideIcon> = {
+  hero: Sparkles, positioning: Target, "our-approach": Route, "creator-network": GalleryVerticalEnd,
+  industries: Layers3, "selected-work": BookOpenText, "why-tu-media": Target,
+  "blog-preview": BookOpenText, faq: MessageCircleQuestion, "final-invitation": Flag,
+};
 
 type DashboardShellProps = {
   children: React.ReactNode;
@@ -169,7 +201,7 @@ function LandingNavigation({
             item={{
               href: `/landing/${section.path}`,
               label: section.label,
-              icon: FilePenLine,
+              icon: landingIcons[section.path] ?? FilePenLine,
             }}
             pathname={pathname}
             onNavigate={onNavigate}
@@ -178,6 +210,13 @@ function LandingNavigation({
       </ul>
     </section>
   );
+}
+
+function AboutNavigation({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+  const [open, toggle] = usePersistedDisclosure("tu-media-cms:nav:about", pathname.startsWith("/about"));
+  const contentId = useId();
+  const selected = pathname.startsWith("/about");
+  return <section className="mt-3"><Button type="button" variant="ghost" onClick={toggle} aria-expanded={open} aria-controls={contentId} className={cn("relative min-h-11 w-full justify-between rounded-md px-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-[#1d8f7a]", selected ? "bg-[#155e58] text-white hover:bg-[#155e58] hover:text-white" : "text-[#52605d] hover:bg-white/70 hover:text-[#163a37]")}>{selected ? <span className="absolute bottom-2 left-0 top-2 w-0.75 rounded-sm bg-[#f3c26b]" /> : null}<span className="flex items-center gap-3"><FilePenLine className="size-[17px]" aria-hidden />About page</span><span className={cn("text-lg leading-none transition-transform duration-200", open && "rotate-45")} aria-hidden>+</span></Button><ul id={contentId} hidden={!open} className="ml-6 mt-2 space-y-1 border-l border-[#b9cac3] pl-3">{aboutSectionDefinitions.map((section) => <NavLink key={section.path} item={{ href: `/about/${section.path}`, label: section.label, icon: aboutIcons[section.path] }} pathname={pathname} onNavigate={onNavigate} />)}</ul></section>;
 }
 
 function SidebarContent({
@@ -246,6 +285,7 @@ function SidebarContent({
             />
           </ul>
           <LandingNavigation pathname={pathname} onNavigate={onNavigate} />
+          <AboutNavigation pathname={pathname} onNavigate={onNavigate} />
           <section className="mt-5">
             <p className="px-3 text-[11px] font-bold uppercase tracking-[0.13em] text-slate-500">
               Website
@@ -316,6 +356,7 @@ function CollapsedSidebar({
   const items: NavItem[] = [
     { href: "/", label: "Overview", icon: LayoutDashboard },
     { href: "/landing/hero", label: "Landing page", icon: FilePenLine },
+    { href: "/about/hero", label: "About page", icon: FilePenLine },
     ...pageItems,
   ];
 

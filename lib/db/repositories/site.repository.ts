@@ -7,16 +7,21 @@ function defaults(): SiteContent {
   return {
     key: "site", createdAt: now, updatedAt: now,
     seo: { title: "TU Media", description: "Creator marketing for technology brands." },
-    navigation: { servicesLabel: "Services", industriesLabel: "Industries", projectsLabel: "Work", blogsLabel: "Blogs", aboutLabel: "About", creatorsLabel: "For creators", contactLabel: "Connect with us" },
-    footer: { positioning: "Technology × creator culture", contactEmail: "hello@tumedia.com", socialLinks: [] },
-    organisation: { name: "TU Media", email: "hello@tumedia.com" },
+    branding: {},
+    footer: { positioning: "Technology × creator culture", socialLinks: [] },
+    organisation: { name: "TU Media", email: "hello@tumedia.com", phone: "", address: "" },
   };
 }
 
 class SiteRepository extends BaseRepository<SiteContent> {
   protected readonly collectionName = "siteContent";
-  async get(): Promise<WithId<SiteContent>> { return (await this.findOne({ key: "site" })) ?? this.insertOne(defaults()); }
-  async update(data: Pick<SiteContent, "seo" | "navigation" | "footer" | "organisation">, updatedBy: string) {
+  async get(): Promise<WithId<SiteContent>> {
+    const existing = await this.findOne({ key: "site" });
+    if (!existing) return this.insertOne(defaults());
+    const fallback = defaults();
+    return { ...fallback, ...existing, branding: { ...fallback.branding, ...existing.branding }, organisation: { ...fallback.organisation, ...existing.organisation }, footer: { ...fallback.footer, ...existing.footer } };
+  }
+  async update(data: Pick<SiteContent, "seo" | "branding" | "footer" | "organisation">, updatedBy: string) {
     return this.updateOne({ key: "site" }, { $set: { ...data, updatedAt: new Date(), updatedBy } });
   }
 }

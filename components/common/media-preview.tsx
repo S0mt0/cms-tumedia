@@ -80,11 +80,20 @@ function MediaPreviewContent({
     >
       <div>
         {status === "broken" ? (
-          <FileWarning className={`mx-auto ${compact ? "size-5" : "size-8"}`} aria-hidden />
+          <FileWarning
+            className={`mx-auto ${compact ? "size-5" : "size-8"}`}
+            aria-hidden
+          />
         ) : isVideo ? (
-          <Video className={`mx-auto ${compact ? "size-5" : "size-8"}`} aria-hidden />
+          <Video
+            className={`mx-auto ${compact ? "size-5" : "size-8"}`}
+            aria-hidden
+          />
         ) : (
-          <ImagePlus className={`mx-auto ${compact ? "size-5" : "size-8"}`} aria-hidden />
+          <ImagePlus
+            className={`mx-auto ${compact ? "size-5" : "size-8"}`}
+            aria-hidden
+          />
         )}
         <p className={`mt-3 text-sm font-medium ${compact ? "sr-only" : ""}`}>
           {status === "broken" && showBrokenPreview

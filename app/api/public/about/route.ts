@@ -1,30 +1,27 @@
+import { assembleAbout } from "@/lib/api/assemblers/about";
 import {
   publicErrorResponse,
   publicPageResponse,
 } from "@/lib/api/public-response";
-import { assembleLanding } from "@/lib/api/assemblers/landing";
 import { cacheKeys } from "@/lib/cache/keys";
 import {
   readPublicCache,
   writePublicCache,
 } from "@/lib/cache/public-content-cache";
-import type { PublicLanding } from "@/lib/types/landing";
+import type { PublicAbout } from "@/lib/types/about";
 
 export async function GET() {
   try {
-    const key = cacheKeys.page("landing");
-    const cached = await readPublicCache<PublicLanding>(key);
-
-    const data = cached ?? (await assembleLanding());
-
+    const key = cacheKeys.page("about");
+    const cached = await readPublicCache<PublicAbout>(key);
+    const data = cached ?? (await assembleAbout());
     if (!cached) await writePublicCache(key, data);
-
     return publicPageResponse(data);
   } catch {
     return publicErrorResponse(
-      "Landing content is unavailable.",
+      "About content is unavailable.",
       503,
-      "LANDING_UNAVAILABLE"
+      "ABOUT_UNAVAILABLE"
     );
   }
 }
