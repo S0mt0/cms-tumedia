@@ -2,7 +2,7 @@ import type { WithId } from "mongodb";
 import { BaseRepository } from "@/lib/db/repositories/base.repository";
 import { marqueeIconIds } from "@/lib/constants/marquee-icons";
 import type { LandingContent, LandingSections } from "@/lib/types/landing";
-import { landingDefaults } from "@/lib/db/repositories/landing.defaults";
+import { landingDefaults } from "@/lib/db/repositories/landing/landing.defaults";
 
 function normaliseMediaUrl(url: string) {
   if (url.startsWith("/") || /^https?:\/\//i.test(url)) return url;
@@ -11,27 +11,62 @@ function normaliseMediaUrl(url: string) {
 
 class LandingRepository extends BaseRepository<LandingContent> {
   protected readonly collectionName = "landingContent";
+
   async get(): Promise<WithId<LandingContent>> {
     const found = await this.findOne({ key: "landing" });
+
     if (!found) return this.insertOne(landingDefaults());
 
     const legacyHero = found.hero as LandingContent["hero"] & {
       primaryCta?: { label: string; href: string };
       secondaryCta?: { label: string; href: string };
-      backgroundMedia: { url: string; alt?: string; type?: "image" | "video"; posterUrl?: string };
+      backgroundMedia: {
+        url: string;
+        alt?: string;
+        type?: "image" | "video";
+        posterUrl?: string;
+      };
     };
     const ctas = legacyHero.ctas ?? [
-      { id: "hero-contact", ...legacyHero.primaryCta!, variant: "primary" as const, order: 0 },
-      { id: "hero-work", ...legacyHero.secondaryCta!, variant: "secondary" as const, order: 1 },
+      {
+        id: "hero-contact",
+        ...legacyHero.primaryCta!,
+        variant: "primary" as const,
+        order: 0,
+      },
+      {
+        id: "hero-work",
+        ...legacyHero.secondaryCta!,
+        variant: "secondary" as const,
+        order: 1,
+      },
     ];
-    const publicUrl = legacyHero.backgroundMedia.url.startsWith("/") || /^https?:\/\//i.test(legacyHero.backgroundMedia.url)
-      ? legacyHero.backgroundMedia.url
-      : `https://${legacyHero.backgroundMedia.url.replace(/^\/+/, "")}`;
-    const backgroundMedia = legacyHero.backgroundMedia.type === "video"
-      ? { type: "video" as const, url: publicUrl, alt: legacyHero.backgroundMedia.alt, posterUrl: legacyHero.backgroundMedia.posterUrl }
-      : { type: "image" as const, url: publicUrl, alt: legacyHero.backgroundMedia.alt || "TU Media creators and technology" };
+    const publicUrl =
+      legacyHero.backgroundMedia.url.startsWith("/") ||
+      /^https?:\/\//i.test(legacyHero.backgroundMedia.url)
+        ? legacyHero.backgroundMedia.url
+        : `https://${legacyHero.backgroundMedia.url.replace(/^\/+/, "")}`;
+    const backgroundMedia =
+      legacyHero.backgroundMedia.type === "video"
+        ? {
+            type: "video" as const,
+            url: publicUrl,
+            alt: legacyHero.backgroundMedia.alt,
+            posterUrl: legacyHero.backgroundMedia.posterUrl,
+          }
+        : {
+            type: "image" as const,
+            url: publicUrl,
+            alt:
+              legacyHero.backgroundMedia.alt ||
+              "TU Media creators and technology",
+          };
 
-    if (!legacyHero.ctas || !legacyHero.backgroundMedia.type || legacyHero.backgroundMedia.url !== publicUrl) {
+    if (
+      !legacyHero.ctas ||
+      !legacyHero.backgroundMedia.type ||
+      legacyHero.backgroundMedia.url !== publicUrl
+    ) {
       const hero = Object.fromEntries(
         Object.entries(legacyHero).filter(
           ([key]) => key !== "primaryCta" && key !== "secondaryCta"
@@ -42,7 +77,13 @@ class LandingRepository extends BaseRepository<LandingContent> {
         ctas,
         backgroundMedia,
       } as LandingContent["hero"];
-      const updated = await this.updateOne({ key: "landing" }, { $set: { hero: normalisedHero, updatedAt: new Date() }, $unset: { "hero.primaryCta": "", "hero.secondaryCta": "" } });
+      const updated = await this.updateOne(
+        { key: "landing" },
+        {
+          $set: { hero: normalisedHero, updatedAt: new Date() },
+          $unset: { "hero.primaryCta": "", "hero.secondaryCta": "" },
+        }
+      );
       return updated ?? found;
     }
 
@@ -75,12 +116,15 @@ class LandingRepository extends BaseRepository<LandingContent> {
     const emphasisUnsets: Record<string, ""> = {};
 
     for (const section of legacyEmphasisSections) {
-      const legacySection = found[section] as LandingSections[typeof section] & {
+      const legacySection = found[
+        section
+      ] as LandingSections[typeof section] & {
         emphasis?: string;
       };
       if (!legacySection.emphasis) continue;
 
-      emphasisUpdates[`${section}.title`] = `${legacySection.title} ${legacySection.emphasis}`.trim();
+      emphasisUpdates[`${section}.title`] =
+        `${legacySection.title} ${legacySection.emphasis}`.trim();
       emphasisUnsets[`${section}.emphasis`] = "";
     }
 
@@ -106,7 +150,7 @@ class LandingRepository extends BaseRepository<LandingContent> {
       const [section, media, field] = path.split(".") as [
         "process" | "creatorFlowCta" | "whyTuMedia",
         "media",
-        "url",
+        "url"
       ];
       const url = found[section][media][field];
       const normalised = normaliseMediaUrl(url);
@@ -130,6 +174,15 @@ class LandingRepository extends BaseRepository<LandingContent> {
 
     return found;
   }
-  async updateSection<K extends keyof LandingSections>(section: K, data: LandingSections[K], updatedBy: string) { return this.updateOne({ key: "landing" }, { $set: { [section]: data, updatedAt: new Date(), updatedBy } }); }
+  async updateSection<K extends keyof LandingSections>(
+    section: K,
+    data: LandingSections[K],
+    updatedBy: string
+  ) {
+    return this.updateOne(
+      { key: "landing" },
+      { $set: { [section]: data, updatedAt: new Date(), updatedBy } }
+    );
+  }
 }
 export const landingRepository = new LandingRepository();

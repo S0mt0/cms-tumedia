@@ -14,13 +14,15 @@ export const mediaReferenceSchema = z.object({
   alt: z.string().trim().min(1).max(200),
 });
 
-const youtubeUrl = z.url().max(500).refine(
-  (value) => {
+const youtubeUrl = z
+  .url()
+  .max(500)
+  .refine((value) => {
     const hostname = new URL(value).hostname.replace(/^www\./, "");
-    return ["youtube.com", "youtube-nocookie.com", "youtu.be"].includes(hostname);
-  },
-  "Use a YouTube, YouTube-nocookie, or youtu.be URL."
-);
+    return ["youtube.com", "youtube-nocookie.com", "youtu.be"].includes(
+      hostname
+    );
+  }, "Use a YouTube, YouTube-nocookie, or youtu.be URL.");
 
 const item = z.object({
   id: z.string().min(1).max(100),

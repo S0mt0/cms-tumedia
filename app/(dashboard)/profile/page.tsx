@@ -15,7 +15,10 @@ export default async function ProfilePage() {
         title="Profile"
         description="Your authenticated CMS account and workspace access."
       />
-      <ModuleCard title="Account" description="This private workspace is available only to allowlisted administrators.">
+      <ModuleCard
+        title="Account"
+        description="This private workspace is available only to allowlisted administrators."
+      >
         <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-4">
             <UserAvatar
@@ -23,9 +26,19 @@ export default async function ProfilePage() {
               image={session.user.image}
               className="size-13 text-base"
             />
-            <div><p className="font-semibold text-[#171a1f]">{session.user.name}</p><p className="mt-1 flex items-center gap-2 text-sm text-slate-500"><Mail className="size-4" />{session.user.email}</p></div>
+            <div>
+              <p className="font-semibold text-[#171a1f]">
+                {session.user.name}
+              </p>
+              <p className="mt-1 flex items-center gap-2 text-sm text-slate-500">
+                <Mail className="size-4" />
+                {session.user.email}
+              </p>
+            </div>
           </div>
-          <div className="w-full sm:w-auto"><LogoutButton /></div>
+          <div className="w-full sm:w-auto">
+            <LogoutButton />
+          </div>
         </div>
       </ModuleCard>
     </div>

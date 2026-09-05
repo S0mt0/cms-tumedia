@@ -10,7 +10,10 @@ export async function appendSheetRow(
   values: string[]
 ): Promise<string | undefined> {
   const environment = getEnvironment();
-  const spreadsheetId = environment.GOOGLE_SHEETS_SPREADSHEET_ID ?? await settingsRepository.getGoogleSheetsSpreadsheetId();
+  const spreadsheetId =
+    environment.GOOGLE_SHEETS_SPREADSHEET_ID ??
+    (await settingsRepository.getGoogleSheetsSpreadsheetId());
+
   if (!spreadsheetId) throw new Error("Google Sheets is not configured.");
 
   const auth = new google.auth.JWT({

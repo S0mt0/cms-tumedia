@@ -167,7 +167,7 @@ function LandingNavigation({
           <NavLink
             key={section.key}
             item={{
-              href: `/landing/${section.key}`,
+              href: `/landing/${section.path}`,
               label: section.label,
               icon: FilePenLine,
             }}

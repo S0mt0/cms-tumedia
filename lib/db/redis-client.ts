@@ -15,27 +15,32 @@ let redisClientPromise: Promise<CacheClient | null> | undefined;
 function createLocalRedisClient(url: string): CacheClient {
   const client = new IORedis(url, {
     lazyConnect: true,
-    maxRetriesPerRequest: 1,
+    maxRetriesPerRequest: 3,
   });
+
   const connect = async () => {
     if (client.status === "wait") await client.connect();
   };
+
   return {
     async ping() {
       await connect();
       return client.ping();
     },
+
     async get<T>(key: string) {
       await connect();
       const value = await client.get(key);
       return value ? (JSON.parse(value) as T) : null;
     },
+
     async set<T>(key: string, value: T, options?: { ex?: number }) {
       await connect();
       return options?.ex
         ? client.set(key, JSON.stringify(value), "EX", options.ex)
         : client.set(key, JSON.stringify(value));
     },
+
     async del(...keys: string[]) {
       await connect();
       return client.del(...keys);
@@ -60,6 +65,7 @@ async function createRedisClient(): Promise<CacheClient | null> {
           error,
         }
       );
+
       return null;
     }
   }

@@ -1,4 +1,7 @@
-import { adminAllowlistRepository, normalizeEmail } from "@/lib/db/repositories/admin-allowlist.repository";
+import {
+  adminAllowlistRepository,
+  normalizeEmail,
+} from "@/lib/db/repositories/admin-allowlist.repository";
 import { getEnvironment } from "@/lib/env";
 
 function defaultAdminEmails(): string[] {

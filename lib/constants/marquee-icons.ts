@@ -32,7 +32,7 @@ export const marqueeIconOptions = [
 
 export const marqueeIconIds = marqueeIconOptions.map((option) => option.id) as [
   (typeof marqueeIconOptions)[number]["id"],
-  ...(typeof marqueeIconOptions)[number]["id"][],
+  ...(typeof marqueeIconOptions)[number]["id"][]
 ];
 
 export type MarqueeIconKey = (typeof marqueeIconOptions)[number]["id"];

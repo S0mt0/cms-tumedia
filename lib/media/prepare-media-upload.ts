@@ -51,7 +51,10 @@ export async function prepareMediaUpload(
     }
   }
 
-  const validation = validateMediaFile({ mimeType: file.type, size: file.size });
+  const validation = validateMediaFile({
+    mimeType: file.type,
+    size: file.size,
+  });
 
   if (!validation.valid) {
     return { error: validation.message };
