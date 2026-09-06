@@ -5,11 +5,12 @@ import { requireAdminSession } from "@/lib/auth/guards";
 import { invalidateCache } from "@/lib/cache/invalidation";
 import { cacheKeys } from "@/lib/cache/keys";
 import { aboutRepository } from "@/lib/db/repositories/about.repository";
+import { normaliseRichTextJson } from "@/lib/rich-text";
 import {
   aboutSectionSchemas,
   aboutUpdateSchema,
 } from "@/lib/schemas/about.schema";
-import type { ActionResult } from "@/lib/types/content";
+import type { AboutSections } from "@/lib/types/about";
 
 const paths = {
   hero: "hero",
@@ -46,9 +47,23 @@ export async function updateAboutSection(
       fieldErrors: data.error.flatten().fieldErrors,
     };
 
+  const sectionData =
+    parsed.data.section === "whyWeExist"
+      ? (() => {
+          const whyWeExist = data.data as AboutSections["whyWeExist"];
+          return {
+            ...whyWeExist,
+            body: {
+              ...whyWeExist.body,
+              json: normaliseRichTextJson(whyWeExist.body.json),
+            },
+          };
+        })()
+      : data.data;
+
   await aboutRepository.updateSection(
     parsed.data.section,
-    data.data as never,
+    sectionData as never,
     session.user.id
   );
 

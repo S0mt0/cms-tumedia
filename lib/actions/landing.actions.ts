@@ -10,7 +10,6 @@ import {
   landingSectionSchemas,
   landingUpdateSchema,
 } from "@/lib/schemas/landing.schema";
-import type { ActionResult } from "@/lib/types/content";
 
 export async function updateLandingSection(
   input: unknown

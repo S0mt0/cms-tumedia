@@ -87,12 +87,19 @@ class LandingRepository extends BaseRepository<LandingContent> {
       return updated ?? found;
     }
 
-    const marqueeItems = found.positioning.marqueeItems.map((item, index) => ({
-      ...item,
-      iconKey: item.iconKey ?? marqueeIconIds[index % marqueeIconIds.length],
-    }));
+    const marqueeItems = found.positioning.marqueeItems.map(
+      (item: { iconKey: string }, index: number) => ({
+        ...item,
+        iconKey: item.iconKey ?? marqueeIconIds[index % marqueeIconIds.length],
+      })
+    );
 
-    if (found.positioning.marqueeItems.some((item) => !item.iconKey)) {
+    if (
+      found.positioning.marqueeItems.some(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (item: { iconKey: any }) => !item.iconKey
+      )
+    ) {
       const updated = await this.updateOne(
         { key: "landing" },
         {
@@ -157,12 +164,15 @@ class LandingRepository extends BaseRepository<LandingContent> {
       if (url !== normalised) mediaUpdates[path] = normalised;
     }
 
-    found.industriesPreview.items.forEach((item, index) => {
-      const normalised = normaliseMediaUrl(item.image.url);
-      if (item.image.url !== normalised) {
-        mediaUpdates[`industriesPreview.items.${index}.image.url`] = normalised;
+    found.industriesPreview.items.forEach(
+      (item: { image: { url: string } }, index: number) => {
+        const normalised = normaliseMediaUrl(item.image.url);
+        if (item.image.url !== normalised) {
+          mediaUpdates[`industriesPreview.items.${index}.image.url`] =
+            normalised;
+        }
       }
-    });
+    );
 
     if (Object.keys(mediaUpdates).length) {
       const updated = await this.updateOne(

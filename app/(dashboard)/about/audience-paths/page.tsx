@@ -2,7 +2,7 @@ import { cache } from "react";
 import { CmsEditorPageShell } from "@/components/common/cms-editor-page-shell";
 import { aboutRepository } from "@/lib/db/repositories/about.repository";
 import type { AboutSections } from "@/lib/types/about";
-import { AboutEditor } from "../_components/about-editor";
+import { AboutSectionEditor } from "../_components/about-section-editor";
 const getSection = cache(
   async () =>
     JSON.parse(
@@ -25,7 +25,7 @@ export default async function AudiencePathsPage() {
         process.env.FRONTEND_BASE_URL ?? "http://localhost:3001"
       }/about`}
     >
-      <AboutEditor
+      <AboutSectionEditor
         section="audiencePaths"
         initial={initial}
         title="Audience paths"

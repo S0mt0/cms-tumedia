@@ -7,16 +7,6 @@ import { GripVertical, Plus, Trash2, X } from "lucide-react";
 import { SortableDndContainer } from "@/components/common/sortable-dnd-container";
 import { Button } from "@/components/ui/button";
 
-export type OrderedItem = { id: string; order: number };
-
-export function normaliseOrder<TItem extends OrderedItem>(items: TItem[]) {
-  return items.map((item, order) => ({ ...item, order }));
-}
-
-export function createItemId(prefix: string) {
-  return `${prefix}-${globalThis.crypto?.randomUUID?.() ?? Date.now()}`;
-}
-
 export function SortableItem({
   children,
   disabled,
@@ -32,7 +22,8 @@ export function SortableItem({
   onRemove: () => void;
   title: string;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id, disabled });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id, disabled });
 
   return (
     <section
@@ -87,7 +78,11 @@ export function SortableList<TItem extends OrderedItem>({
   onReorder: (items: TItem[]) => void;
 }) {
   return (
-    <SortableDndContainer disabled={disabled} items={items} onReorder={onReorder}>
+    <SortableDndContainer
+      disabled={disabled}
+      items={items}
+      onReorder={onReorder}
+    >
       {children}
     </SortableDndContainer>
   );
@@ -112,7 +107,13 @@ export function ListSectionHeader({
         <h3 className="text-sm font-bold text-[#163a37]">{title}</h3>
         <p className="mt-1 text-xs leading-5 text-[#61746d]">{description}</p>
       </div>
-      <Button disabled={disabled} onClick={onAdd} size="sm" type="button" variant="outline">
+      <Button
+        disabled={disabled}
+        onClick={onAdd}
+        size="sm"
+        type="button"
+        variant="outline"
+      >
         <Plus aria-hidden /> {addLabel}
       </Button>
     </div>
@@ -135,8 +136,12 @@ export function InlineAddPanel({
       <p className="text-sm font-bold text-[#163a37]">Add {title}</p>
       <div className="mt-3">{children}</div>
       <div className="mt-4 flex flex-wrap justify-end gap-2">
-        <Button onClick={onCancel} size="sm" type="button" variant="outline"><X aria-hidden /> Cancel</Button>
-        <Button onClick={onAdd} size="sm" type="button"><Plus aria-hidden /> Add {title}</Button>
+        <Button onClick={onCancel} size="sm" type="button" variant="outline">
+          <X aria-hidden /> Cancel
+        </Button>
+        <Button onClick={onAdd} size="sm" type="button">
+          <Plus aria-hidden /> Add {title}
+        </Button>
       </div>
     </section>
   );

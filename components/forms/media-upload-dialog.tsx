@@ -76,15 +76,6 @@ export function MediaUploadDialog({
   }
 
   function handleOpenChange(nextOpen: boolean) {
-    if (nextOpen) {
-      setKind(allowedTypes.includes(value.type) ? value.type : allowedTypes[0]);
-      setFile(null);
-      setPreviewUrl(null);
-      setPreviewStatus("idle");
-      setAlt(value.alt ?? "");
-      setError(undefined);
-      setUploadProgress(undefined);
-    }
     onOpenChange(nextOpen);
   }
 
