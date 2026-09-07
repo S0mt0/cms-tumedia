@@ -62,10 +62,12 @@ export const aboutSectionSchemas = {
     description: text(700),
     bridgeEyebrow: text(100),
     bridgeTitle: text(100),
-    brandsLabel: text(100),
-    creatorsLabel: text(100),
-    brands: z.array(item).min(1).max(12),
-    creators: z.array(item).min(1).max(12),
+    brandsEyebrow: text(100),
+    brandsTitle: text(200),
+    creatorsEyebrow: text(100),
+    creatorsTitle: text(200),
+    brands: z.array(item).min(1).max(10),
+    creators: z.array(item).min(1).max(10),
   }),
   difference: z.object({
     eyebrow: text(100),
@@ -89,7 +91,7 @@ export const aboutSectionSchemas = {
   story: z.object({
     eyebrow: text(100),
     title: text(200),
-    paragraphs: z.array(item).min(1).max(8),
+    body: richTextDocument,
     principlesEyebrow: text(100),
     principles: z
       .array(

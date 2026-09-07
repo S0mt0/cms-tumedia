@@ -2,7 +2,7 @@ import { cache } from "react";
 import { CmsEditorPageShell } from "@/components/common/cms-editor-page-shell";
 import { aboutRepository } from "@/lib/db/repositories/about.repository";
 import type { AboutSections } from "@/lib/types/about";
-import { AboutSectionEditor } from "../_components/about-section-editor";
+import { DifferenceEditor } from "./_components/difference-editor";
 const getSection = cache(
   async () =>
     JSON.parse(
@@ -11,6 +11,8 @@ const getSection = cache(
 );
 export default async function DifferencePage() {
   const initial = await getSection();
+  const mediaPreviewBaseUrl = process.env.FRONTEND_BASE_URL ?? "http://localhost:3001";
+
   return (
     <CmsEditorPageShell
       eyebrow="About page"
@@ -21,18 +23,12 @@ export default async function DifferencePage() {
         { label: "About", href: "/about" },
         { label: "Our difference" },
       ]}
-      previewHref={`${
-        process.env.FRONTEND_BASE_URL ?? "http://localhost:3001"
-      }/about`}
+      previewHref={`${mediaPreviewBaseUrl}/about`}
     >
-      <AboutSectionEditor
-        section="difference"
+      <DifferenceEditor
         initial={initial}
+        mediaPreviewBaseUrl={mediaPreviewBaseUrl}
         title="Differentiators"
-        description="Add, remove, edit, and reorder differentiator cards and their details."
-        mediaPreviewBaseUrl={
-          process.env.FRONTEND_BASE_URL ?? "http://localhost:3001"
-        }
       />
     </CmsEditorPageShell>
   );

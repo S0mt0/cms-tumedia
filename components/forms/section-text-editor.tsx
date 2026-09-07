@@ -210,16 +210,100 @@ export function SectionTextEditor({
           >
             <SubscriptIcon className="size-4" aria-hidden />
           </ToolbarButton>
-          <ToolbarButton active={formatting?.alignment === "left"} disabled={!editor || readOnly} label="Align left" onClick={() => { editor?.chain().focus().setTextAlign("left").run(); }}><AlignLeft className="size-4" aria-hidden /></ToolbarButton>
-          <ToolbarButton active={formatting?.alignment === "center"} disabled={!editor || readOnly} label="Align centre" onClick={() => { editor?.chain().focus().setTextAlign("center").run(); }}><AlignCenter className="size-4" aria-hidden /></ToolbarButton>
-          <ToolbarButton active={formatting?.alignment === "right"} disabled={!editor || readOnly} label="Align right" onClick={() => { editor?.chain().focus().setTextAlign("right").run(); }}><AlignRight className="size-4" aria-hidden /></ToolbarButton>
-          <ToolbarButton active={formatting?.alignment === "justify"} disabled={!editor || readOnly} label="Justify" onClick={() => { editor?.chain().focus().setTextAlign("justify").run(); }}><AlignJustify className="size-4" aria-hidden /></ToolbarButton>
+          <ToolbarButton
+            active={formatting?.alignment === "left"}
+            disabled={!editor || readOnly}
+            label="Align left"
+            onClick={() => {
+              editor?.chain().focus().setTextAlign("left").run();
+            }}
+          >
+            <AlignLeft className="size-4" aria-hidden />
+          </ToolbarButton>
+          <ToolbarButton
+            active={formatting?.alignment === "center"}
+            disabled={!editor || readOnly}
+            label="Align centre"
+            onClick={() => {
+              editor?.chain().focus().setTextAlign("center").run();
+            }}
+          >
+            <AlignCenter className="size-4" aria-hidden />
+          </ToolbarButton>
+          <ToolbarButton
+            active={formatting?.alignment === "right"}
+            disabled={!editor || readOnly}
+            label="Align right"
+            onClick={() => {
+              editor?.chain().focus().setTextAlign("right").run();
+            }}
+          >
+            <AlignRight className="size-4" aria-hidden />
+          </ToolbarButton>
+          <ToolbarButton
+            active={formatting?.alignment === "justify"}
+            disabled={!editor || readOnly}
+            label="Justify"
+            onClick={() => {
+              editor?.chain().focus().setTextAlign("justify").run();
+            }}
+          >
+            <AlignJustify className="size-4" aria-hidden />
+          </ToolbarButton>
           <div className="relative">
-            <ToolbarButton active={formatting?.highlight} disabled={!editor || readOnly} label="Highlight colour" onClick={() => setHighlightPaletteOpen((open) => !open)}><Highlighter className="size-4" style={{ color: formatting?.highlightColor }} aria-hidden /></ToolbarButton>
-            {highlightPaletteOpen ? <div aria-label="Highlight colour palette" className="absolute right-0 top-11 z-10 flex gap-1 rounded-sm border border-[#b8cec4] bg-white p-2 shadow-none" role="group">
-              {highlightColors.map((color) => <Button aria-label={color.label} aria-pressed={formatting?.highlightColor === color.value} className="size-7 rounded-sm border border-[#d5e0da] p-0" key={color.value} onClick={() => { editor?.chain().focus().setHighlight({ color: color.value }).run(); setHighlightPaletteOpen(false); }} style={{ backgroundColor: color.value }} type="button" variant="outline"><span className="sr-only">{color.label}</span></Button>)}
-              <Button aria-label="Remove highlight" className="size-7 rounded-sm p-0 text-xs" onClick={() => { editor?.chain().focus().unsetHighlight().run(); setHighlightPaletteOpen(false); }} type="button" variant="outline">×</Button>
-            </div> : null}
+            <ToolbarButton
+              active={formatting?.highlight}
+              disabled={!editor || readOnly}
+              label="Highlight colour"
+              onClick={() => setHighlightPaletteOpen((open) => !open)}
+            >
+              <Highlighter
+                className="size-4"
+                style={{ color: formatting?.highlightColor }}
+                aria-hidden
+              />
+            </ToolbarButton>
+            {highlightPaletteOpen ? (
+              <div
+                aria-label="Highlight colour palette"
+                className="absolute right-0 top-11 z-10 flex gap-1 rounded-sm border border-[#b8cec4] bg-white p-2 shadow-none"
+                role="group"
+              >
+                {highlightColors.map((color) => (
+                  <Button
+                    aria-label={color.label}
+                    aria-pressed={formatting?.highlightColor === color.value}
+                    className="size-7 rounded-sm border border-[#d5e0da] p-0"
+                    key={color.value}
+                    onClick={() => {
+                      editor
+                        ?.chain()
+                        .focus()
+                        .setHighlight({ color: color.value })
+                        .run();
+                      setHighlightPaletteOpen(false);
+                    }}
+                    style={{ backgroundColor: color.value }}
+                    type="button"
+                    variant="outline"
+                  >
+                    <span className="sr-only">{color.label}</span>
+                  </Button>
+                ))}
+                <Button
+                  aria-label="Remove highlight"
+                  className="size-7 rounded-sm p-0 text-xs"
+                  onClick={() => {
+                    editor?.chain().focus().unsetHighlight().run();
+                    setHighlightPaletteOpen(false);
+                  }}
+                  type="button"
+                  variant="outline"
+                >
+                  ×
+                </Button>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

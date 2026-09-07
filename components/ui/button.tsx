@@ -9,8 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-[#0b0d17] text-white hover:bg-[#282b3b]",
-        outline:
-          "border-slate-300 bg-white text-[#0b0d17] hover:bg-slate-50",
+        outline: "border-slate-300 bg-white text-[#0b0d17] hover:bg-slate-50",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:

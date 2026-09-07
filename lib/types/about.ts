@@ -21,8 +21,10 @@ export type AboutSections = {
     description: string;
     bridgeEyebrow: string;
     bridgeTitle: string;
-    brandsLabel: string;
-    creatorsLabel: string;
+    brandsEyebrow: string;
+    brandsTitle: string;
+    creatorsEyebrow: string;
+    creatorsTitle: string;
     brands: AboutItem[];
     creators: AboutItem[];
   };
@@ -43,7 +45,7 @@ export type AboutSections = {
   story: {
     eyebrow: string;
     title: string;
-    paragraphs: AboutItem[];
+    body: RichTextDocument;
     principlesEyebrow: string;
     principles: { id: string; title: string; copy: string; order: number }[];
   };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+
 import { Button } from "@/components/ui/button";
 
 export default function DashboardError({
@@ -12,6 +13,7 @@ export default function DashboardError({
   useEffect(() => {
     console.error("CMS dashboard error");
   }, []);
+
   return (
     <section className="mx-auto max-w-2xl rounded-sm border border-slate-200 bg-white p-7 shadow-sm">
       <p className="text-xs font-extrabold uppercase tracking-[.16em] text-[#ff3d8d]">

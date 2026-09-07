@@ -2,7 +2,7 @@ import { cache } from "react";
 import { CmsEditorPageShell } from "@/components/common/cms-editor-page-shell";
 import { aboutRepository } from "@/lib/db/repositories/about.repository";
 import type { AboutSections } from "@/lib/types/about";
-import { AboutSectionEditor } from "../_components/about-section-editor";
+import { AudiencePathsEditor } from "./_components/audience-paths-editor";
 const getSection = cache(
   async () =>
     JSON.parse(
@@ -11,6 +11,8 @@ const getSection = cache(
 );
 export default async function AudiencePathsPage() {
   const initial = await getSection();
+  const mediaPreviewBaseUrl = process.env.FRONTEND_BASE_URL ?? "http://localhost:3001";
+
   return (
     <CmsEditorPageShell
       eyebrow="About page"
@@ -21,18 +23,11 @@ export default async function AudiencePathsPage() {
         { label: "About", href: "/about" },
         { label: "Audience paths" },
       ]}
-      previewHref={`${
-        process.env.FRONTEND_BASE_URL ?? "http://localhost:3001"
-      }/about`}
+      previewHref={`${mediaPreviewBaseUrl}/about`}
     >
-      <AboutSectionEditor
-        section="audiencePaths"
+      <AudiencePathsEditor
         initial={initial}
-        title="Audience paths"
-        description="Edit the brand and creator routes, calls to action, and creator background media."
-        mediaPreviewBaseUrl={
-          process.env.FRONTEND_BASE_URL ?? "http://localhost:3001"
-        }
+        mediaPreviewBaseUrl={mediaPreviewBaseUrl}
       />
     </CmsEditorPageShell>
   );

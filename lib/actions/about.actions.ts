@@ -48,14 +48,14 @@ export async function updateAboutSection(
     };
 
   const sectionData =
-    parsed.data.section === "whyWeExist"
+    parsed.data.section === "whyWeExist" || parsed.data.section === "story"
       ? (() => {
-          const whyWeExist = data.data as AboutSections["whyWeExist"];
+          const section = data.data as AboutSections["whyWeExist"] | AboutSections["story"];
           return {
-            ...whyWeExist,
+            ...section,
             body: {
-              ...whyWeExist.body,
-              json: normaliseRichTextJson(whyWeExist.body.json),
+              ...section.body,
+              json: normaliseRichTextJson(section.body.json),
             },
           };
         })()
