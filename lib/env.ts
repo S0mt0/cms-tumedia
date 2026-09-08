@@ -27,11 +27,12 @@ const rawEnvironmentSchema = z.object({
   GOOGLE_SHEETS_SPREADSHEET_ID: z.string().min(1).optional(),
   GOOGLE_SERVICE_ACCOUNT_EMAIL: z.email(),
   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: z.string().min(1),
-  GOOGLE_SHEETS_BRAND_RANGE: z.string().default("Brand Inquiries!A:M"),
-  GOOGLE_SHEETS_CREATOR_RANGE: z.string().default("Creator Applications!A:Q"),
+  GOOGLE_SHEETS_BRAND_RANGE: z.string().default("'Brand Inquiries'!A:M"),
+  GOOGLE_SHEETS_CREATOR_RANGE: z.string().default("'Creator Applications'!A:Q"),
   GOOGLE_SHEETS_NEWSLETTER_RANGE: z
     .string()
-    .default("Newsletter Subscribers!A:D"),
+    .default("'Newsletter Subscribers'!A:D"),
+  GOOGLE_SHEETS_CONTACT_RANGE: z.string().default("'Contact Submissions'!A:K"),
 });
 
 const environmentSchema = rawEnvironmentSchema.extend({

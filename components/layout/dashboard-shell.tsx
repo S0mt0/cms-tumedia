@@ -13,6 +13,9 @@ import {
   Flag,
   GalleryVerticalEnd,
   MessageCircleQuestion,
+  MessagesSquare,
+  PhoneCall,
+  Send,
   LayoutDashboard,
   Menu,
   PanelLeftClose,
@@ -54,6 +57,14 @@ const aboutIcons: Record<(typeof aboutSectionDefinitions)[number]["path"], Lucid
   "our-difference": Route, "our-story": BookOpenText, "global-capability": Globe2,
   "audience-paths": GalleryVerticalEnd, closing: Flag,
 };
+
+const contactSectionDefinitions = [
+  { path: "hero", label: "Hero", icon: Sparkles },
+  { path: "conversation", label: "Start a conversation", icon: MessageCircleQuestion },
+  { path: "next-steps", label: "What happens next", icon: Route },
+  { path: "submissions", label: "Submissions", icon: MessagesSquare },
+  { path: "info", label: "Info", icon: PhoneCall },
+] as const;
 
 const landingIcons: Record<string, LucideIcon> = {
   hero: Sparkles, positioning: Target, "our-approach": Route, "creator-network": GalleryVerticalEnd,
@@ -219,6 +230,13 @@ function AboutNavigation({ pathname, onNavigate }: { pathname: string; onNavigat
   return <section className="mt-3"><Button type="button" variant="ghost" onClick={toggle} aria-expanded={open} aria-controls={contentId} className={cn("relative min-h-11 w-full justify-between rounded-md px-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-[#1d8f7a]", selected ? "bg-[#155e58] text-white hover:bg-[#155e58] hover:text-white" : "text-[#52605d] hover:bg-white/70 hover:text-[#163a37]")}>{selected ? <span className="absolute bottom-2 left-0 top-2 w-0.75 rounded-sm bg-[#f3c26b]" /> : null}<span className="flex items-center gap-3"><FilePenLine className="size-[17px]" aria-hidden />About page</span><span className={cn("text-lg leading-none transition-transform duration-200", open && "rotate-45")} aria-hidden>+</span></Button><ul id={contentId} hidden={!open} className="ml-6 mt-2 space-y-1 border-l border-[#b9cac3] pl-3">{aboutSectionDefinitions.map((section) => <NavLink key={section.path} item={{ href: `/about/${section.path}`, label: section.label, icon: aboutIcons[section.path] }} pathname={pathname} onNavigate={onNavigate} />)}</ul></section>;
 }
 
+function ContactNavigation({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+  const [open, toggle] = usePersistedDisclosure("tu-media-cms:nav:contact", pathname.startsWith("/contact"));
+  const contentId = useId();
+  const selected = pathname.startsWith("/contact");
+  return <section className="mt-3"><Button type="button" variant="ghost" onClick={toggle} aria-expanded={open} aria-controls={contentId} className={cn("relative min-h-11 w-full justify-between rounded-md px-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-[#1d8f7a]", selected ? "bg-[#155e58] text-white hover:bg-[#155e58] hover:text-white" : "text-[#52605d] hover:bg-white/70 hover:text-[#163a37]")}>{selected ? <span className="absolute bottom-2 left-0 top-2 w-0.75 rounded-sm bg-[#f3c26b]" /> : null}<span className="flex items-center gap-3"><Send className="size-[17px]" aria-hidden />Contact page</span><span className={cn("text-lg leading-none transition-transform duration-200", open && "rotate-45")} aria-hidden>+</span></Button><ul id={contentId} hidden={!open} className="ml-6 mt-2 space-y-1 border-l border-[#b9cac3] pl-3">{contactSectionDefinitions.map((section) => <NavLink key={section.path} item={{ href: `/contact/${section.path}`, label: section.label, icon: section.icon }} pathname={pathname} onNavigate={onNavigate} />)}</ul></section>;
+}
+
 function SidebarContent({
   pathname,
   email,
@@ -286,6 +304,7 @@ function SidebarContent({
           </ul>
           <LandingNavigation pathname={pathname} onNavigate={onNavigate} />
           <AboutNavigation pathname={pathname} onNavigate={onNavigate} />
+          <ContactNavigation pathname={pathname} onNavigate={onNavigate} />
           <section className="mt-5">
             <p className="px-3 text-[11px] font-bold uppercase tracking-[0.13em] text-slate-500">
               Website
@@ -357,6 +376,7 @@ function CollapsedSidebar({
     { href: "/", label: "Overview", icon: LayoutDashboard },
     { href: "/landing/hero", label: "Landing page", icon: FilePenLine },
     { href: "/about/hero", label: "About page", icon: FilePenLine },
+    { href: "/contact/hero", label: "Contact page", icon: Send },
     ...pageItems,
   ];
 

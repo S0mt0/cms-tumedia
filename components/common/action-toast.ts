@@ -2,7 +2,7 @@
 
 import { toast } from "sonner";
 
-export function notifyActionResult(result: ActionResult) {
+export function notifyActionResult<T>(result: ActionResult<T>) {
   if (result.success) toast.success(result.message ?? "Changes saved.");
   else toast.error(result.message);
 }

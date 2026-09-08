@@ -107,12 +107,12 @@ dev-all: ensure-infra ## Start CMS, wait until ready, then start the frontend.
 		cms_pid=""; \
 		cleanup() { test -z "$$cms_pid" || kill "$$cms_pid" 2>/dev/null || true; }; \
 		trap cleanup EXIT INT TERM; \
-		pnpm dev -- --port $(CMS_PORT) & cms_pid=$$!; \
+		pnpm dev --port $(CMS_PORT) & cms_pid=$$!; \
 		printf "Waiting for CMS at %s...\n" "$(CMS_HEALTH_URL)"; \
 		for attempt in $$(seq 1 $(STARTUP_TIMEOUT)); do \
 			if curl --silent --fail --output /dev/null "$(CMS_HEALTH_URL)"; then \
 				echo "CMS is ready. Starting frontend on port $(FRONTEND_PORT)."; \
-				cd "$(FRONTEND_DIR)" && pnpm dev -- --port $(FRONTEND_PORT); \
+				cd "$(FRONTEND_DIR)" && pnpm dev --port $(FRONTEND_PORT); \
 				exit $$?; \
 			fi; \
 			if ! kill -0 "$$cms_pid" 2>/dev/null; then \

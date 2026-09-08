@@ -15,6 +15,7 @@ import {
   arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
+  rectSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -27,6 +28,8 @@ type SortableDndContainerProps<TItem extends SortableRecord> = {
   onReorder: (items: TItem[]) => void;
   disabled?: boolean;
   sortableItems?: boolean;
+  className?: string;
+  layout?: "list" | "grid";
   children: (item: TItem, index: number) => ReactNode;
 };
 
@@ -35,6 +38,8 @@ export function SortableDndContainer<TItem extends SortableRecord>({
   onReorder,
   disabled = false,
   sortableItems = false,
+  className,
+  layout = "list",
   children,
 }: SortableDndContainerProps<TItem>) {
   const sensors = useSensors(
@@ -53,10 +58,12 @@ export function SortableDndContainer<TItem extends SortableRecord>({
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd} sensors={sensors}>
-      <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
-        {items.map((item, index) => (
+      <SortableContext items={items.map((item) => item.id)} strategy={layout === "grid" ? rectSortingStrategy : verticalListSortingStrategy}>
+        <div className={className}>
+          {items.map((item, index) => (
           sortableItems ? <SortableItem disabled={disabled} id={item.id} key={item.id}>{children(item, index)}</SortableItem> : <div key={item.id}>{children(item, index)}</div>
-        ))}
+          ))}
+        </div>
       </SortableContext>
     </DndContext>
   );
