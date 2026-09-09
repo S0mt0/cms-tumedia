@@ -3,6 +3,7 @@ import { google } from "googleapis";
 import { getEnvironment } from "@/lib/env";
 import { settingsRepository } from "@/lib/db/repositories/settings.repository";
 import type { ContactSubmission } from "@/lib/types/contact";
+import type { CreatorSubmission } from "@/lib/types/join";
 
 export type SheetName = "brand" | "creator" | "newsletter" | "contact";
 
@@ -17,6 +18,23 @@ const contactHeaders = [
   "Target timeline",
   "Indicative budget",
   "Message",
+  "Submitted at",
+];
+const creatorHeaders = [
+  "Full name",
+  "Email",
+  "Country",
+  "Content niche",
+  "Primary platform",
+  "Languages",
+  "Followers or subscribers",
+  "Average views",
+  "Top engagement region",
+  "Collaboration categories",
+  "About their content",
+  "Main social profile",
+  "Additional social profile",
+  "Media kit URL",
   "Submitted at",
 ];
 
@@ -184,6 +202,85 @@ async function ensureContactHeaders(
   });
 }
 
+async function ensureCreatorHeaders(
+  sheets: ReturnType<typeof google.sheets>,
+  spreadsheetId: string,
+  range: string
+): Promise<void> {
+  const title = getWorksheetTitle(range);
+  const headerRange = worksheetRange(title, "A1:O1");
+  const firstRow =
+    (
+      await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: headerRange,
+      })
+    ).data.values?.[0] ?? [];
+  if (firstRow.join("|") !== creatorHeaders.join("|")) {
+    if (firstRow.length > 0)
+      await sheets.spreadsheets.batchUpdate({
+        spreadsheetId,
+        requestBody: {
+          requests: [
+            {
+              insertDimension: {
+                range: {
+                  sheetId: await getWorksheetId(sheets, spreadsheetId, title),
+                  dimension: "ROWS",
+                  startIndex: 0,
+                  endIndex: 1,
+                },
+                inheritFromBefore: false,
+              },
+            },
+          ],
+        },
+      });
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: headerRange,
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values: [creatorHeaders] },
+    });
+  }
+  const sheetId = await getWorksheetId(sheets, spreadsheetId, title);
+  const widths = [
+    170, 220, 160, 200, 170, 190, 170, 150, 190, 250, 420, 280, 280, 280, 190,
+  ];
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [
+        {
+          repeatCell: {
+            range: {
+              sheetId,
+              startRowIndex: 0,
+              endRowIndex: 1,
+              startColumnIndex: 0,
+              endColumnIndex: creatorHeaders.length,
+            },
+            cell: { userEnteredFormat: { textFormat: { bold: true } } },
+            fields: "userEnteredFormat.textFormat.bold",
+          },
+        },
+        ...widths.map((pixelSize, index) => ({
+          updateDimensionProperties: {
+            range: {
+              sheetId,
+              dimension: "COLUMNS" as const,
+              startIndex: index,
+              endIndex: index + 1,
+            },
+            properties: { pixelSize },
+            fields: "pixelSize",
+          },
+        })),
+      ],
+    },
+  });
+}
+
 async function getWorksheetId(
   sheets: ReturnType<typeof google.sheets>,
   spreadsheetId: string,
@@ -231,6 +328,8 @@ export async function appendSheetRow(
   await ensureWorksheet(sheets, spreadsheetId, range);
   if (sheet === "contact") {
     await ensureContactHeaders(sheets, spreadsheetId, range);
+  } else if (sheet === "creator") {
+    await ensureCreatorHeaders(sheets, spreadsheetId, range);
   }
 
   const response = await sheets.spreadsheets.values.append({
@@ -278,5 +377,46 @@ export async function syncContactSheetRows(
       requestBody: { values: submissions.map(submissionValues) },
     });
   }
+  return submissions.length;
+}
+
+function creatorSubmissionValues(submission: CreatorSubmission): string[] {
+  return [
+    submission.fullName,
+    submission.email,
+    submission.country,
+    submission.niche,
+    submission.platform,
+    submission.languages ?? "",
+    submission.followers,
+    submission.averageViews,
+    submission.topRegion,
+    submission.categories ?? "",
+    submission.about ?? "",
+    submission.primarySocialLink,
+    submission.secondarySocialLink ?? "",
+    submission.mediaKitUrl ?? "",
+    submission.createdAt.toISOString(),
+  ];
+}
+
+export async function syncCreatorSheetRows(
+  submissions: CreatorSubmission[]
+): Promise<number> {
+  const { sheets, spreadsheetId, range } = await getConfiguredSheet("creator");
+  const title = getWorksheetTitle(range);
+  await ensureWorksheet(sheets, spreadsheetId, range);
+  await ensureCreatorHeaders(sheets, spreadsheetId, range);
+  await sheets.spreadsheets.values.clear({
+    spreadsheetId,
+    range: worksheetRange(title, "A2:O"),
+  });
+  if (submissions.length)
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: worksheetRange(title, "A2:O"),
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values: submissions.map(creatorSubmissionValues) },
+    });
   return submissions.length;
 }
