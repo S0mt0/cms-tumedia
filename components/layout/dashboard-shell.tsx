@@ -80,6 +80,7 @@ const blogSectionDefinitions = [
 ] as const;
 const industriesNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "introduction", label: "Introduction", icon: Target }, { path: "manage", label: "Industry directory", icon: Layers3 }] as const;
 const workNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "collection", label: "Campaign reels", icon: GalleryVerticalEnd }, { path: "process", label: "Process", icon: Route }, { path: "faq", label: "FAQ", icon: MessageCircleQuestion }, { path: "invitation", label: "Invitation", icon: Flag }] as const;
+const servicesNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "overview", label: "Overview", icon: Layers3 }, { path: "system", label: "Connected system", icon: Route }, { path: "deep-dives", label: "Deep dives", icon: BookOpenText }, { path: "process", label: "Process", icon: Target }, { path: "industries", label: "Industries", icon: Globe2 }, { path: "faq", label: "FAQ", icon: MessageCircleQuestion }, { path: "closing", label: "Final invitation", icon: Flag }] as const;
 
 const landingIcons: Record<string, LucideIcon> = {
   hero: Sparkles, positioning: Target, "our-approach": Route, "creator-network": GalleryVerticalEnd,
@@ -336,6 +337,7 @@ function SidebarContent({
       <BlogsNavigation pathname={pathname} onNavigate={onNavigate} />
       <ContentNavigation pathname={pathname} onNavigate={onNavigate} base="industries" label="Industries" icon={Layers3} items={industriesNavigation} />
       <ContentNavigation pathname={pathname} onNavigate={onNavigate} base="work" label="Work" icon={BookOpenText} items={workNavigation} />
+      <ContentNavigation pathname={pathname} onNavigate={onNavigate} base="services" label="Services" icon={Route} items={servicesNavigation} />
           <section className="mt-5">
             <p className="px-3 text-[11px] font-bold uppercase tracking-[0.13em] text-slate-500">
               Website
