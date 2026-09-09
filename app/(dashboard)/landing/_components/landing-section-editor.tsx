@@ -21,6 +21,7 @@ import { notifyActionResult } from "@/components/common/action-toast";
 import { FormFeedback } from "@/components/forms/form-feedback";
 import { MediaUploadDialog } from "@/components/forms/media-upload-dialog";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -217,6 +218,7 @@ function ReorderableItem({
   onRemove: () => void;
   title: string;
 }) {
+  const [confirmingRemoval, setConfirmingRemoval] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id,
@@ -250,7 +252,7 @@ function ReorderableItem({
         <Button
           className="text-[#9a514c] hover:bg-[#fff0ee] hover:text-[#7d3833]"
           disabled={disabled}
-          onClick={onRemove}
+          onClick={() => setConfirmingRemoval(true)}
           size="icon-sm"
           type="button"
           variant="ghost"
@@ -262,6 +264,9 @@ function ReorderableItem({
         </Button>
       </div>
       <div className="p-3 sm:p-4">{children}</div>
+      <AlertDialog open={confirmingRemoval} onOpenChange={setConfirmingRemoval}>
+        <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Remove this {title.toLowerCase()}?</AlertDialogTitle><AlertDialogDescription>This removes it from the draft. Save changes to publish the update.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => { onRemove(); setConfirmingRemoval(false); }}>Remove</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }
@@ -344,18 +349,13 @@ function PositioningLists({
   const update = (patch: Partial<LandingSections["positioning"]>) =>
     onChange({ ...value, ...patch });
   const removeStat = (id: string) => {
-    if (value.stats.length === 1 || !window.confirm("Remove this statistic?"))
-      return;
+    if (value.stats.length === 1) return;
     update({
       stats: normaliseOrder(value.stats.filter((item) => item.id !== id)),
     });
   };
   const removeTopic = (id: string) => {
-    if (
-      value.marqueeItems.length === 1 ||
-      !window.confirm("Remove this marquee topic?")
-    )
-      return;
+    if (value.marqueeItems.length === 1) return;
     update({
       marqueeItems: normaliseOrder(
         value.marqueeItems.filter((item) => item.id !== id)
@@ -675,11 +675,7 @@ function ProcessSteps({
             id={item.id}
             index={index}
             onRemove={() => {
-              if (
-                value.steps.length === 1 ||
-                !window.confirm("Remove this process step?")
-              )
-                return;
+              if (value.steps.length === 1) return;
               update(
                 normaliseOrder(
                   value.steps.filter((current) => current.id !== item.id)
@@ -775,11 +771,7 @@ function WhyItems({
             id={item.id}
             index={index}
             onRemove={() => {
-              if (
-                value.items.length === 1 ||
-                !window.confirm("Remove this point?")
-              )
-                return;
+              if (value.items.length === 1) return;
               update(
                 normaliseOrder(
                   value.items.filter((current) => current.id !== item.id)
@@ -876,11 +868,7 @@ function FaqItems({
             id={item.id}
             index={index}
             onRemove={() => {
-              if (
-                value.items.length === 1 ||
-                !window.confirm("Remove this question?")
-              )
-                return;
+              if (value.items.length === 1) return;
               update(
                 normaliseOrder(
                   value.items.filter((current) => current.id !== item.id)
@@ -1166,11 +1154,7 @@ function IndustryItems({
               )
             }
             onRemove={() => {
-              if (
-                value.items.length === 1 ||
-                !window.confirm("Remove this industry?")
-              )
-                return;
+              if (value.items.length === 1) return;
               update(
                 normaliseOrder(
                   value.items.filter((current) => current.id !== item.id)

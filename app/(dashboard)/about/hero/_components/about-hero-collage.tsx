@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 import { MediaPreview } from "@/components/common/media-preview";
 import { MediaUploadDialog } from "@/components/forms/media-upload-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import type { ActionResult } from "@/lib/types/content";
 import type { HeroBackgroundMedia, MediaRef } from "@/lib/types/landing";
@@ -29,6 +30,7 @@ export function AboutHeroCollage({
   onChange,
 }: AboutHeroCollageProps) {
   const [activeId, setActiveId] = useState<string | "new" | null>(null);
+  const [pendingRemoval, setPendingRemoval] = useState<string | null>(null);
   const activeImage = useMemo(
     () => value.find((image) => image.id === activeId),
     [activeId, value]
@@ -36,13 +38,8 @@ export function AboutHeroCollage({
   const dialogOpen = activeId !== null;
 
   function removeImage(id: string) {
-    if (window.confirm("Remove this collage image?")) {
-      onChange(
-        value
-          .filter((image) => image.id !== id)
-          .map((image, order) => ({ ...image, order }))
-      );
-    }
+    onChange(value.filter((image) => image.id !== id).map((image, order) => ({ ...image, order })));
+    setPendingRemoval(null);
   }
 
   async function selectImage(
@@ -128,7 +125,7 @@ export function AboutHeroCollage({
                   aria-label={`Delete collage image ${index + 1}`}
                   className="px-2 text-[#9a514c]"
                   disabled={readOnly}
-                  onClick={() => removeImage(image.id)}
+              onClick={() => setPendingRemoval(image.id)}
                   size="sm"
                   type="button"
                   variant="outline"
@@ -164,6 +161,12 @@ export function AboutHeroCollage({
         title={activeImage ? "Change collage image" : "Add collage image"}
         value={activeImage ? { type: "image", ...activeImage } : emptyMedia}
       />
+      <AlertDialog open={pendingRemoval !== null} onOpenChange={(open) => !open && setPendingRemoval(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>Remove this collage image?</AlertDialogTitle><AlertDialogDescription>This removes it from the draft. Save changes to publish the update.</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => pendingRemoval && removeImage(pendingRemoval)}>Remove</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }

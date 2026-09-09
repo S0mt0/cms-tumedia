@@ -78,6 +78,8 @@ const blogSectionDefinitions = [
   { path: "hero", label: "Hero", icon: Sparkles },
   { path: "manage", label: "Manage posts", icon: BookOpenText },
 ] as const;
+const industriesNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "introduction", label: "Introduction", icon: Target }, { path: "manage", label: "Industry directory", icon: Layers3 }] as const;
+const workNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "collection", label: "Campaign reels", icon: GalleryVerticalEnd }, { path: "process", label: "Process", icon: Route }, { path: "faq", label: "FAQ", icon: MessageCircleQuestion }, { path: "invitation", label: "Invitation", icon: Flag }] as const;
 
 const landingIcons: Record<string, LucideIcon> = {
   hero: Sparkles, positioning: Target, "our-approach": Route, "creator-network": GalleryVerticalEnd,
@@ -260,6 +262,8 @@ function BlogsNavigation({ pathname, onNavigate }: { pathname: string; onNavigat
   return <section className="mt-3"><Button type="button" variant="ghost" onClick={toggle} aria-expanded={open} aria-controls={contentId} className={cn("relative min-h-11 w-full justify-between rounded-md px-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-[#1d8f7a]", selected ? "bg-[#155e58] text-white hover:bg-[#155e58] hover:text-white" : "text-[#52605d] hover:bg-white/70 hover:text-[#163a37]")}>{selected ? <span className="absolute bottom-2 left-0 top-2 w-0.75 rounded-sm bg-[#f3c26b]" /> : null}<span className="flex items-center gap-3"><Newspaper className="size-[17px]" aria-hidden />Blogs</span><span className={cn("text-lg leading-none transition-transform duration-200", open && "rotate-45")} aria-hidden>+</span></Button><ul id={contentId} hidden={!open} className="ml-6 mt-2 space-y-1 border-l border-[#b9cac3] pl-3">{blogSectionDefinitions.map((section) => <NavLink key={section.path} item={{ href: `/blogs/${section.path}`, label: section.label, icon: section.icon }} pathname={pathname} onNavigate={onNavigate} />)}</ul></section>;
 }
 
+function ContentNavigation({ pathname, onNavigate, base, label, icon: Icon, items }: { pathname: string; onNavigate?: () => void; base: string; label: string; icon: LucideIcon; items: readonly { path: string; label: string; icon: LucideIcon }[] }) { const [open,toggle]=usePersistedDisclosure(`tu-media-cms:nav:${base}`,pathname.startsWith(`/${base}`)); const id=useId(); const selected=pathname.startsWith(`/${base}`); return <section className="mt-3"><Button type="button" variant="ghost" onClick={toggle} aria-expanded={open} aria-controls={id} className={cn("relative min-h-11 w-full justify-between rounded-md px-3 text-sm font-medium",selected?"bg-[#155e58] text-white hover:bg-[#155e58] hover:text-white":"text-[#52605d] hover:bg-white/70 hover:text-[#163a37]")}><span className="flex items-center gap-3"><Icon className="size-[17px]"/>{label}</span><span className={cn("text-lg",open&&"rotate-45")}>+</span></Button><ul id={id} hidden={!open} className="ml-6 mt-2 space-y-1 border-l border-[#b9cac3] pl-3">{items.map(item=><NavLink key={item.path} item={{href:`/${base}/${item.path}`,label:item.label,icon:item.icon}} pathname={pathname} onNavigate={onNavigate}/>)}</ul></section>; }
+
 function SidebarContent({
   pathname,
   email,
@@ -330,6 +334,8 @@ function SidebarContent({
       <ContactNavigation pathname={pathname} onNavigate={onNavigate} />
       <JoinNavigation pathname={pathname} onNavigate={onNavigate} />
       <BlogsNavigation pathname={pathname} onNavigate={onNavigate} />
+      <ContentNavigation pathname={pathname} onNavigate={onNavigate} base="industries" label="Industries" icon={Layers3} items={industriesNavigation} />
+      <ContentNavigation pathname={pathname} onNavigate={onNavigate} base="work" label="Work" icon={BookOpenText} items={workNavigation} />
           <section className="mt-5">
             <p className="px-3 text-[11px] font-bold uppercase tracking-[0.13em] text-slate-500">
               Website

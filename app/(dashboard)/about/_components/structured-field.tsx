@@ -6,6 +6,7 @@ import { useState } from "react";
 import { MediaPreview } from "@/components/common/media-preview";
 import { SortableDndContainer } from "@/components/common/sortable-dnd-container";
 import { MediaUploadDialog } from "@/components/forms/media-upload-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +34,7 @@ export function StructuredField({
 }: FieldProps) {
   const [mediaOpen, setMediaOpen] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [pendingRemoval, setPendingRemoval] = useState<string | null>(null);
   if (typeof value === "string") {
     const multiline =
       /text|copy|description|paragraph|statement|introduction|manifesto|supporting/i.test(
@@ -164,14 +166,7 @@ export function StructuredField({
                   type="button"
                   variant="ghost"
                   className="text-[#9a514c]"
-                  onClick={() => {
-                    if (window.confirm("Remove this item?"))
-                      onChange(
-                        normalise(
-                          items.filter((current) => current.id !== item.id)
-                        )
-                      );
-                  }}
+                  onClick={() => setPendingRemoval(item.id)}
                 >
                   <Trash2 className="size-4" />
                   <span className="sr-only">Remove item</span>
@@ -222,6 +217,12 @@ export function StructuredField({
             </article>
           )}
         </SortableDndContainer>
+        <AlertDialog open={pendingRemoval !== null} onOpenChange={(open) => !open && setPendingRemoval(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader><AlertDialogTitle>Remove this item?</AlertDialogTitle><AlertDialogDescription>This removes it from the draft. Save changes to publish the update.</AlertDialogDescription></AlertDialogHeader>
+            <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => { if (pendingRemoval) onChange(normalise(items.filter((item) => item.id !== pendingRemoval))); setPendingRemoval(null); }}>Remove</AlertDialogAction></AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         {adding ? (
           <div className="flex items-center justify-between rounded-md border border-dashed border-[#8caea1] bg-white p-3">
             <span className="text-sm text-[#527069]">

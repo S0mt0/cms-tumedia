@@ -1,0 +1,4 @@
+import { z } from "zod";
+const text = (max: number) => z.string().trim().min(1).max(max); const optional = (max: number) => z.string().trim().max(max).optional(); const cta = z.object({ label: text(80), href: z.string().trim().startsWith("/").max(240) }); const youtube = z.string().url().refine((value) => /(^|\.)youtube\.com$|(^|\.)youtu\.be$/.test(new URL(value).hostname), "Use a YouTube URL.");
+export const industriesSectionSchemas = { hero: z.object({ eyebrow: optional(100), title: text(200), emphasis: optional(120), description: optional(700), ctaLabel: optional(80) }), introduction: z.object({ title: text(160), description: text(700), cta }), items: z.array(z.object({ id: text(100), label: text(120), copy: text(700), videos: z.array(youtube).max(8), order: z.number().int().min(0) })).min(1).max(12) };
+export const industriesUpdateSchema = z.object({ section: z.enum(["hero", "introduction", "items"]), data: z.unknown() });

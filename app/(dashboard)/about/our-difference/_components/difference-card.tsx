@@ -1,9 +1,11 @@
 "use client";
 
 import { GripVertical, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 import { SortableDndContainer } from "@/components/common/sortable-dnd-container";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,6 +31,7 @@ export function DifferenceCard({
   onChange: (next: DifferenceItem) => void;
   onRemove: () => void;
 }) {
+  const [pendingRemoval, setPendingRemoval] = useState<string | null>(null);
   function addDetail() {
     if (item.details.length >= MAX_DETAILS) return;
     onChange({
@@ -54,13 +57,13 @@ export function DifferenceCard({
   }
 
   function removeDetail(id: string) {
-    if (!window.confirm("Remove this detail point?")) return;
     onChange({
       ...item,
       details: normaliseOrder(
         item.details.filter((detail) => detail.id !== id)
       ),
     });
+    setPendingRemoval(null);
   }
 
   return (
@@ -165,7 +168,7 @@ export function DifferenceCard({
                   size="icon-sm"
                   type="button"
                   variant="ghost"
-                  onClick={() => removeDetail(detail.id)}
+                  onClick={() => setPendingRemoval(detail.id)}
                 >
                   <Trash2 />
                 </Button>
@@ -174,6 +177,9 @@ export function DifferenceCard({
           </SortableDndContainer>
         </div>
       </div>
+      <AlertDialog open={pendingRemoval !== null} onOpenChange={(open) => !open && setPendingRemoval(null)}>
+        <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Remove this detail point?</AlertDialogTitle><AlertDialogDescription>This removes it from this differentiator. Save changes to publish the update.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => pendingRemoval && removeDetail(pendingRemoval)}>Remove</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+      </AlertDialog>
     </article>
   );
 }

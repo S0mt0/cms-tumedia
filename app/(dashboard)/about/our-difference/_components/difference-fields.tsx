@@ -1,9 +1,11 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { useState } from "react";
 
 import { SortableDndContainer } from "@/components/common/sortable-dnd-container";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,6 +27,7 @@ export function DifferenceFields({
   readOnly: boolean;
   onChange: (next: Difference) => void;
 }) {
+  const [pendingRemoval, setPendingRemoval] = useState<string | null>(null);
   function updateItem(id: string, nextItem: DifferenceItem) {
     onChange({
       ...value,
@@ -33,11 +36,11 @@ export function DifferenceFields({
   }
 
   function removeItem(id: string) {
-    if (!window.confirm("Remove this differentiator?")) return;
     onChange({
       ...value,
       items: normaliseOrder(value.items.filter((item) => item.id !== id)),
     });
+    setPendingRemoval(null);
   }
 
   function addItem() {
@@ -158,10 +161,13 @@ export function DifferenceFields({
                 item={item}
                 readOnly={readOnly}
                 onChange={(nextItem) => updateItem(item.id, nextItem)}
-                onRemove={() => removeItem(item.id)}
+                onRemove={() => setPendingRemoval(item.id)}
               />
             )}
           </SortableDndContainer>
+          <AlertDialog open={pendingRemoval !== null} onOpenChange={(open) => !open && setPendingRemoval(null)}>
+            <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Remove this differentiator?</AlertDialogTitle><AlertDialogDescription>This removes it from the draft. Save changes to publish the update.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => pendingRemoval && removeItem(pendingRemoval)}>Remove</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+          </AlertDialog>
         </div>
       </section>
     </div>
