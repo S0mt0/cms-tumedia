@@ -57,19 +57,52 @@ export function SortableDndContainer<TItem extends SortableRecord>({
   }
 
   return (
-    <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd} sensors={sensors}>
-      <SortableContext items={items.map((item) => item.id)} strategy={layout === "grid" ? rectSortingStrategy : verticalListSortingStrategy}>
+    <DndContext
+      collisionDetection={closestCenter}
+      onDragEnd={onDragEnd}
+      sensors={sensors}
+    >
+      <SortableContext
+        items={items.map((item) => item.id)}
+        strategy={
+          layout === "grid" ? rectSortingStrategy : verticalListSortingStrategy
+        }
+      >
         <div className={className}>
-          {items.map((item, index) => (
-          sortableItems ? <SortableItem disabled={disabled} id={item.id} key={item.id}>{children(item, index)}</SortableItem> : <div key={item.id}>{children(item, index)}</div>
-          ))}
+          {items.map((item, index) =>
+            sortableItems ? (
+              <SortableItem disabled={disabled} id={item.id} key={item.id}>
+                {children(item, index)}
+              </SortableItem>
+            ) : (
+              <div key={item.id}>{children(item, index)}</div>
+            )
+          )}
         </div>
       </SortableContext>
     </DndContext>
   );
 }
 
-function SortableItem({ children, disabled, id }: { children: ReactNode; disabled: boolean; id: UniqueIdentifier }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id, disabled });
-  return <div ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition }} {...attributes} {...listeners}>{children}</div>;
+function SortableItem({
+  children,
+  disabled,
+  id,
+}: {
+  children: ReactNode;
+  disabled: boolean;
+  id: UniqueIdentifier;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id, disabled });
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      {...attributes}
+      {...listeners}
+    >
+      {children}
+    </div>
+  );
 }

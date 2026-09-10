@@ -26,13 +26,15 @@ export const ACCEPTED_MEDIA_MIME_TYPES = [
 
 export const MAX_MEDIA_FILE_SIZE = 20 * 1024 * 1024;
 export const MAX_IMAGE_FILE_SIZE = MAX_MEDIA_FILE_SIZE;
-export const MAX_VIDEO_FILE_SIZE = MAX_MEDIA_FILE_SIZE;
+export const MAX_VIDEO_FILE_SIZE = 25 * 1024 * 1024;
 
 export type MediaKind = "image" | "video";
 
 export function getMediaKind(mimeType: string): MediaKind | null {
-  if ((IMAGE_MIME_TYPES as readonly string[]).includes(mimeType)) return "image";
-  if ((VIDEO_MIME_TYPES as readonly string[]).includes(mimeType)) return "video";
+  if ((IMAGE_MIME_TYPES as readonly string[]).includes(mimeType))
+    return "image";
+  if ((VIDEO_MIME_TYPES as readonly string[]).includes(mimeType))
+    return "video";
   return null;
 }
 
@@ -46,7 +48,12 @@ export function validateMediaFile(input: { mimeType: string; size: number }) {
     };
   const maximumSize = MAX_MEDIA_FILE_SIZE;
   if (input.size > maximumSize) {
-    return { valid: false as const, message: `${kind === "image" ? "Images" : "Videos"} must be ${maximumSize / (1024 * 1024)} MB or smaller.` };
+    return {
+      valid: false as const,
+      message: `${kind === "image" ? "Images" : "Videos"} must be ${
+        maximumSize / (1024 * 1024)
+      } MB or smaller.`,
+    };
   }
   return { valid: true as const, kind };
 }

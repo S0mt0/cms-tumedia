@@ -148,7 +148,8 @@ export function MediaUploadDialog({
             setUploadProgress(Math.round((event.loaded / event.total) * 100));
           },
         });
-      } catch {
+      } catch (error) {
+        console.error("Upload failed:", error);
         notifyAsyncResult({
           error:
             "The upload did not finish. Please check your connection and try again.",
@@ -341,7 +342,9 @@ export function MediaUploadDialog({
                       }
                       onStatusChange={(status) => {
                         if (previewUrl) {
-                          setPreviewStatus(status === "empty" ? "idle" : status);
+                          setPreviewStatus(
+                            status === "empty" ? "idle" : status
+                          );
                         }
                       }}
                     />

@@ -94,6 +94,7 @@ async function ensureWorksheet(
   const defaultSheet = (await getWorksheets(sheets, spreadsheetId)).find(
     (sheet) => sheet.title === "Sheet 1" || sheet.title === "Sheet1"
   );
+
   if (defaultSheet) {
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId,
@@ -305,6 +306,7 @@ async function getConfiguredSheet(sheet: SheetName) {
     key: environment.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/g, "\n"),
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
+
   const range =
     sheet === "brand"
       ? environment.GOOGLE_SHEETS_BRAND_RANGE
@@ -313,6 +315,7 @@ async function getConfiguredSheet(sheet: SheetName) {
       : sheet === "newsletter"
       ? environment.GOOGLE_SHEETS_NEWSLETTER_RANGE
       : environment.GOOGLE_SHEETS_CONTACT_RANGE;
+
   return {
     sheets: google.sheets({ version: "v4", auth }),
     spreadsheetId,
