@@ -11,10 +11,10 @@ import type { ActionResult } from "@/lib/types/content";
 
 export function GoogleSheetsSettingsForm({
   initialValue,
-  environmentManaged,
+  environmentFallback,
 }: {
   initialValue: string;
-  environmentManaged: boolean;
+  environmentFallback: boolean;
 }) {
   const [spreadsheetId, setSpreadsheetId] = useState(initialValue);
   const [result, setResult] = useState<ActionResult>();
@@ -40,14 +40,13 @@ export function GoogleSheetsSettingsForm({
           id="google-sheets-id"
           className="mt-2"
           value={spreadsheetId}
-          disabled={environmentManaged}
           onChange={(event) => setSpreadsheetId(event.target.value)}
         />
       </label>
-      {environmentManaged ? (
+      {environmentFallback ? (
         <p className="border-l-2 border-[#d9a648] bg-[#fff9ec] px-3 py-2 text-sm leading-6 text-[#725623]">
-          An environment spreadsheet ID currently takes precedence over this
-          saved value.
+          This field currently shows the environment fallback. Saving a value
+          here creates a database override.
         </p>
       ) : null}
       <div className="flex flex-wrap items-center gap-3">
@@ -55,7 +54,7 @@ export function GoogleSheetsSettingsForm({
           type="submit"
           size="lg"
           className="min-h-11 rounded-md bg-[#155e58] px-4 hover:bg-[#104b46]"
-          disabled={pending || environmentManaged}
+          disabled={pending}
         >
           {pending ? "Saving…" : "Save Google Sheets ID"}
         </Button>

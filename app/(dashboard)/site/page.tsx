@@ -8,8 +8,8 @@ export default async function SitePage() {
   return (
     <div className="space-y-6">
       <CmsPageHeader
-        title="Site & footer"
-        description="Manage shared labels, footer information, and default search metadata."
+        title="Site"
+        description="Manage organisation details, brand assets, and default search metadata."
         actions={
           <Link
             href={process.env.FRONTEND_BASE_URL ?? "http://localhost:3000"}

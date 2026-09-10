@@ -1,5 +1,6 @@
 import { APIError, type GenericEndpointContext } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { ObjectId } from "mongodb";
 import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
 import { magicLink } from "better-auth/plugins";
@@ -11,10 +12,18 @@ import { getEnvironment } from "@/lib/env";
 import { mailService } from "@/lib/services/mail.service";
 
 type BetterAuthUserDocument = {
+  _id?: ObjectId;
   id: string;
   email: string;
   name: string;
 };
+
+async function findAuthenticatedUser(userId: unknown): Promise<BetterAuthUserDocument | null> {
+  const normalizedId = String(userId);
+  const filters: Array<Record<string, unknown>> = [{ id: normalizedId }];
+  if (ObjectId.isValid(normalizedId)) filters.push({ _id: new ObjectId(normalizedId) });
+  return getDatabase().collection<BetterAuthUserDocument>("user").findOne({ $or: filters });
+}
 
 function requestDetails(context: GenericEndpointContext | null) {
   const headers = context?.headers;
@@ -26,6 +35,32 @@ function requestDetails(context: GenericEndpointContext | null) {
       undefined,
     userAgent: headers?.get("user-agent") || undefined,
   };
+}
+
+function deviceFromUserAgent(userAgent?: string): string {
+  if (!userAgent) return "Unknown device";
+  const platform = /iPhone|iPad|iPod/i.test(userAgent)
+    ? "iOS"
+    : /Android/i.test(userAgent)
+    ? "Android"
+    : /Mac OS X/i.test(userAgent)
+    ? "macOS"
+    : /Windows/i.test(userAgent)
+    ? "Windows"
+    : /Linux/i.test(userAgent)
+    ? "Linux"
+    : "Unknown OS";
+
+  const browser = /Edg\//i.test(userAgent)
+    ? "Edge"
+    : /Chrome\//i.test(userAgent)
+    ? "Chrome"
+    : /Firefox\//i.test(userAgent)
+    ? "Firefox"
+    : /Safari\//i.test(userAgent)
+    ? "Safari"
+    : "Browser";
+  return `${platform} · ${browser}`;
 }
 
 const environment = getEnvironment();
@@ -66,28 +101,32 @@ export const auth = betterAuth({
     session: {
       create: {
         after: async (session, context) => {
-          const user = await getDatabase()
-            .collection<BetterAuthUserDocument>("user")
-            .findOne({ id: session.userId });
+          const user = await findAuthenticatedUser(session.userId);
           if (!user || !(await isAdminEmail(user.email))) return;
 
-          await adminLogRepository.record({
-            event: "login",
-            adminId: session.userId,
+          const details = requestDetails(context);
+          await adminLogRepository.recordSessionLogin({
+            adminId: String(session.userId),
             email: user.email,
-            sessionId: session.id,
-            ...requestDetails(context),
-            createdAt: new Date(),
+            sessionId: String(session.id),
+            ...details,
+            device: deviceFromUserAgent(details.userAgent),
+            loginAt: new Date(),
           });
         },
       },
       delete: {
         after: async (session) => {
-          await adminLogRepository.record({
-            event: "logout",
-            adminId: session.userId,
-            sessionId: session.id,
-            createdAt: new Date(),
+          const user = await findAuthenticatedUser(session.userId);
+          if (!user) return;
+          await adminLogRepository.recordSessionLogout({
+            sessionId: String(session.id),
+            adminId: String(session.userId),
+            email: user.email,
+            loginAt:
+              "createdAt" in session && session.createdAt instanceof Date
+                ? session.createdAt
+                : undefined,
           });
         },
       },

@@ -3,6 +3,6 @@ import type { SiteContent } from "@/lib/types/site";
 
 export type SiteDraft = Pick<
   SiteContent,
-  "seo" | "branding" | "footer" | "organisation"
+  "seo" | "branding" | "organisation"
 >;
 export type DraftSetter = Dispatch<SetStateAction<SiteDraft>>;

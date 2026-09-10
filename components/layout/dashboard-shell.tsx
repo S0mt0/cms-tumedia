@@ -23,6 +23,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Settings2,
+  FileText,
   SlidersHorizontal,
   X,
   type LucideIcon,
@@ -39,7 +40,8 @@ import { cn } from "@/lib/utils";
 type NavItem = { href: string; label: string; icon: LucideIcon };
 
 const pageItems: NavItem[] = [
-  { href: "/site", label: "Site & footer", icon: SlidersHorizontal },
+  { href: "/site", label: "Site", icon: SlidersHorizontal },
+  { href: "/legal", label: "Terms & privacy", icon: FileText },
   { href: "/settings", label: "Settings", icon: Settings2 },
 ];
 
@@ -307,22 +309,7 @@ function SidebarContent({
         ) : null}
       </div>
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-4">
-        <Link
-          href="/profile"
-          onClick={onNavigate}
-          className="flex items-center gap-3 rounded-md border border-[#c5d4cd] bg-white/75 p-3 outline-none transition-colors hover:border-[#8da89d] focus-visible:ring-2 focus-visible:ring-[#1d8f7a]"
-        >
-          <UserAvatar name={name} image={image} className="size-9" />
-          <span className="min-w-0">
-            <span className="block truncate text-sm font-semibold text-[#171a1f]">
-              {name}
-            </span>
-            <span className="block truncate text-xs text-slate-500">
-              {email}
-            </span>
-          </span>
-        </Link>
-        <nav className="mt-5" aria-label="CMS navigation">
+        <nav aria-label="CMS navigation">
           <ul className="space-y-1">
             <NavLink
               item={{ href: "/", label: "Overview", icon: LayoutDashboard }}
@@ -356,7 +343,16 @@ function SidebarContent({
         </nav>
       </div>
       <div className="border-t border-[#c5d4cd] p-3">
-        <LogoutButton />
+        <div className="rounded-lg border border-[#c5d4cd] bg-white/55 p-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <UserAvatar name={name} image={image} className="size-10 shrink-0" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-[#171a1f]">{name}</p>
+              <p className="truncate text-xs text-slate-500">{email}</p>
+            </div>
+          </div>
+          <LogoutButton />
+        </div>
       </div>
     </>
   );
@@ -446,15 +442,9 @@ function CollapsedSidebar({
           ))}
         </ul>
       </nav>
-      <div className="border-t border-[#c5d4cd] p-2">
-        <Link
-          href="/profile"
-          className="size-11 overflow-hidden rounded-full border border-[#c5d4cd] bg-white/75 outline-none transition-colors hover:border-[#8da89d] focus-visible:ring-2 focus-visible:ring-[#1d8f7a]"
-          aria-label="Open profile"
-          title="Profile"
-        >
-          <UserAvatar name={name} image={image} className="size-full" />
-        </Link>
+      <div className="flex flex-col items-center gap-2 border-t border-[#c5d4cd] p-2">
+        <UserAvatar name={name} image={image} className="size-11 border border-[#c5d4cd]" />
+        <LogoutButton compact />
       </div>
     </>
   );

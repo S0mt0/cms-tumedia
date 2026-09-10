@@ -12,6 +12,7 @@ export const cacheKeys = {
       | "blogs"
       | "contact"
       | "join"
+      | "legal"
       | "privacy"
       | "terms"
   ) => `${prefix}:page:${page}`,
