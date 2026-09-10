@@ -8,7 +8,7 @@ import { adminAllowlistRepository, normalizeEmail } from "@/lib/db/repositories/
 import { isEnvironmentAdmin } from "@/lib/auth/allowlist";
 import { getDatabase } from "@/lib/db/config";
 import { adminLogRepository } from "@/lib/db/repositories/admin-log.repository";
-import { adminEmailSchema, googleSheetsSettingsSchema } from "@/lib/schemas/settings.schema";
+import { adminEmailSchema, googleSheetsSettingsSchema, mailServiceSettingsSchema } from "@/lib/schemas/settings.schema";
 import type { ActionResult } from "@/lib/types/content";
 
 export async function saveGoogleSheetsSettings(input: unknown): Promise<ActionResult> {
@@ -18,6 +18,21 @@ export async function saveGoogleSheetsSettings(input: unknown): Promise<ActionRe
   await settingsRepository.setGoogleSheetsSpreadsheetId(parsed.data.spreadsheetId, session.user.id);
   revalidatePath("/settings");
   return { success: true, message: "Google Sheets settings saved." };
+}
+
+export async function saveMailServiceSettings(input: unknown): Promise<ActionResult> {
+  const session = await requireAdminSession();
+  const parsed = mailServiceSettingsSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Enter a sender name and a valid sender email address.",
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+  await settingsRepository.setMailServiceSettings(parsed.data, session.user.id);
+  revalidatePath("/settings");
+  return { success: true, message: "Mail sender settings saved." };
 }
 
 export async function addAllowedAdmin(input: unknown): Promise<ActionResult> {

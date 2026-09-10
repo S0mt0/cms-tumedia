@@ -1,6 +1,7 @@
 import { CmsPageHeader } from "@/components/common/cms-page-header";
 import { ModuleCard } from "@/components/common/module-card";
 import { GoogleSheetsSettingsForm } from "./_components/google-sheets-settings-form";
+import { MailSenderSettingsForm } from "./_components/mail-sender-settings-form";
 import { AccessSettings } from "./_components/access-settings";
 import Link from "next/link";
 import { requireAdminSession } from "@/lib/auth/guards";
@@ -10,8 +11,9 @@ import { settingsRepository } from "@/lib/db/repositories/settings.repository";
 
 export default async function SettingsPage() {
   const environment = getEnvironment();
-  const configured = await settingsRepository.getGoogleSheetsSpreadsheetId();
-  const [session, allowlist] = await Promise.all([
+  const [configured, mailSettings, session, allowlist] = await Promise.all([
+    settingsRepository.getGoogleSheetsSpreadsheetId(),
+    settingsRepository.getMailServiceSettings(),
     requireAdminSession(),
     adminAllowlistRepository.list(),
   ]);
@@ -51,6 +53,12 @@ export default async function SettingsPage() {
           environmentFallback={
             !configured && Boolean(environment.GOOGLE_SHEETS_SPREADSHEET_ID)
           }
+        />
+      </ModuleCard>
+      <ModuleCard title="Mail sender" description="Set the name and email address used when the CMS sends email.">
+        <MailSenderSettingsForm
+          initialName={mailSettings?.senderName ?? environment.SENDER_NAME}
+          initialEmail={mailSettings?.mailFrom ?? `${environment.MAIL_FROM}@mail.thetumedia.com`}
         />
       </ModuleCard>
     </div>
