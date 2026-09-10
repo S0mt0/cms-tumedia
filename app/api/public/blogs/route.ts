@@ -31,10 +31,11 @@ export async function GET(request: Request) {
       Number(searchParams.get("page")) || 1
     );
     const featuredOnly = searchParams.get("featured") === "true";
+    const search = searchParams.get("search")?.trim() || undefined;
     const limit = 12;
     const [{ seo, hero, updatedAt }, { items, total }] = await Promise.all([
       blogContentRepository.get(),
-      blogPostRepository.list({ page: pageNumber, limit, published: true, featured: featuredOnly ? true : undefined }),
+      blogPostRepository.list({ page: pageNumber, limit, published: true, featured: featuredOnly ? true : undefined, search }),
     ]);
     return publicPageResponse({
       page: "blogs",

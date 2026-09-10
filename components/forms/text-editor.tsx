@@ -74,7 +74,13 @@ export function TextEditor({ value, onChange, disabled = false }: EditorProps) {
       StarterKit.configure({ heading: { levels: [1, 2, 3, 4] } }),
       Underline,
       Highlight.configure({ multicolor: true }),
-      Link.configure({ openOnClick: false }),
+      Link.configure({
+        autolink: true,
+        linkOnPaste: true,
+        openOnClick: false,
+        defaultProtocol: "https://",
+        HTMLAttributes: { class: "text-[#3178ff] underline underline-offset-2" },
+      }),
       Image,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Youtube.configure({ nocookie: true }),
@@ -102,7 +108,7 @@ export function TextEditor({ value, onChange, disabled = false }: EditorProps) {
       },
       attributes: {
         class:
-          "min-h-100 bg-white p-5 leading-8 outline-none [&_h1]:mt-8 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mt-7 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-bold [&_h4]:mt-5 [&_h4]:text-lg [&_h4]:font-bold [&_img]:my-5 [&_img]:max-w-full [&_iframe]:my-5 [&_iframe]:max-w-full [&_pre]:overflow-x-auto [&_pre]:bg-[#163a37] [&_pre]:p-4 [&_pre]:text-white [&_mark]:rounded-sm [&_mark]:px-0.5",
+          "min-h-100 bg-white p-5 leading-8 outline-none [&_a]:font-medium [&_a]:text-[#3178ff] [&_a]:underline [&_a]:underline-offset-2 [&_p]:mb-5 [&_p:last-child]:mb-0 [&_h1]:mb-5 [&_h1]:mt-10 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mb-4 [&_h2]:mt-9 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mb-3 [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-bold [&_h4]:mb-3 [&_h4]:mt-7 [&_h4]:text-lg [&_h4]:font-bold [&_ul]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mb-5 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-[#7047eb] [&_blockquote]:pl-4 [&_blockquote]:italic [&_img]:my-6 [&_img]:max-w-full [&_iframe]:my-6 [&_iframe]:max-w-full [&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:bg-[#163a37] [&_pre]:p-4 [&_pre]:text-white [&_mark]:rounded-sm [&_mark]:px-0.5",
       },
     },
   });
