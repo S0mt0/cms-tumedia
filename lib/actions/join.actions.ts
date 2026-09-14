@@ -12,7 +12,7 @@ import {
   joinSectionSchemas,
   joinUpdateSchema,
 } from "@/lib/schemas/join.schema";
-import { syncCreatorSheetRows } from "@/lib/services/google-sheets.service";
+import { getGoogleSheetsErrorMessage, syncCreatorSheetRows } from "@/lib/services/google-sheets.service";
 import type { ActionResult } from "@/lib/types/content";
 import type { JoinSections } from "@/lib/types/join";
 
@@ -93,7 +93,7 @@ export async function syncCreatorSubmissionsToGoogleSheet(): Promise<
     console.error("Unable to sync creator submissions", error);
     return {
       success: false,
-      message: "Could not sync submissions to Google Sheets.",
+      message: getGoogleSheetsErrorMessage(error) ?? "Could not sync submissions to Google Sheets.",
     };
   }
 }

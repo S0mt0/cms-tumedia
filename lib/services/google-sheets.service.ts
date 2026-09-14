@@ -7,6 +7,8 @@ import type { CreatorSubmission } from "@/lib/types/join";
 
 export type SheetName = "brand" | "creator" | "newsletter" | "contact";
 
+type GoogleApiError = { code?: number; status?: number };
+
 const contactHeaders = [
   "Full name",
   "Email",
@@ -321,6 +323,37 @@ async function getConfiguredSheet(sheet: SheetName) {
     spreadsheetId,
     range,
   };
+}
+
+function isPermissionError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const candidate = error as GoogleApiError;
+  return candidate.code === 403 || candidate.status === 403;
+}
+
+export function getGoogleSheetsAccessMessage(): string {
+  return `Google Sheets access was denied. Share the spreadsheet with ${getEnvironment().GOOGLE_SERVICE_ACCOUNT_EMAIL} as an Editor, then try again.`;
+}
+
+export function getGoogleSheetsErrorMessage(error: unknown): string | undefined {
+  return isPermissionError(error) ? getGoogleSheetsAccessMessage() : undefined;
+}
+
+/** Validates access before storing an override, rather than discovering it at sync time. */
+export async function verifyGoogleSpreadsheetAccess(spreadsheetId: string): Promise<void> {
+  const environment = getEnvironment();
+  const auth = new google.auth.JWT({
+    email: environment.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    key: environment.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+  const sheets = google.sheets({ version: "v4", auth });
+  try {
+    await sheets.spreadsheets.get({ spreadsheetId, fields: "spreadsheetId" });
+  } catch (error) {
+    if (isPermissionError(error)) throw new Error(getGoogleSheetsAccessMessage());
+    throw error;
+  }
 }
 
 export async function appendSheetRow(

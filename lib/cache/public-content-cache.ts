@@ -1,6 +1,8 @@
 import { getRedisClient } from "@/lib/db/redis-client";
 
-const DEFAULT_TTL_SECONDS = 20 * 60;
+// Public documents remain warm for a month. Every content mutation removes its
+// precise key, so editors still publish changes immediately.
+const DEFAULT_TTL_SECONDS = 30 * 24 * 60 * 60;
 
 export async function readPublicCache<T>(key: string): Promise<T | null> {
   try {

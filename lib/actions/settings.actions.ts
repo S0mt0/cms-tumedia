@@ -8,6 +8,7 @@ import { adminAllowlistRepository, normalizeEmail } from "@/lib/db/repositories/
 import { isEnvironmentAdmin } from "@/lib/auth/allowlist";
 import { getDatabase } from "@/lib/db/config";
 import { adminLogRepository } from "@/lib/db/repositories/admin-log.repository";
+import { getGoogleSheetsAccessMessage, verifyGoogleSpreadsheetAccess } from "@/lib/services/google-sheets.service";
 import { adminEmailSchema, googleSheetsSettingsSchema, mailServiceSettingsSchema } from "@/lib/schemas/settings.schema";
 import type { ActionResult } from "@/lib/types/content";
 
@@ -15,6 +16,11 @@ export async function saveGoogleSheetsSettings(input: unknown): Promise<ActionRe
   const session = await requireAdminSession();
   const parsed = googleSheetsSettingsSchema.safeParse(input);
   if (!parsed.success) return { success: false, message: "Enter a valid Google Sheets spreadsheet ID.", fieldErrors: parsed.error.flatten().fieldErrors };
+  try {
+    await verifyGoogleSpreadsheetAccess(parsed.data.spreadsheetId);
+  } catch (error) {
+    return { success: false, message: error instanceof Error && error.message === getGoogleSheetsAccessMessage() ? error.message : "Could not verify access to that Google spreadsheet." };
+  }
   await settingsRepository.setGoogleSheetsSpreadsheetId(parsed.data.spreadsheetId, session.user.id);
   revalidatePath("/settings");
   return { success: true, message: "Google Sheets settings saved." };

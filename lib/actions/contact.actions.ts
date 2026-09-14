@@ -5,7 +5,7 @@ import { requireAdminSession } from "@/lib/auth/guards";
 import { invalidateCache } from "@/lib/cache/invalidation";
 import { cacheKeys } from "@/lib/cache/keys";
 import { contactRepository, contactSubmissionRepository } from "@/lib/db/repositories/contact.repository";
-import { syncContactSheetRows } from "@/lib/services/google-sheets.service";
+import { getGoogleSheetsErrorMessage, syncContactSheetRows } from "@/lib/services/google-sheets.service";
 import { contactSectionSchemas, contactUpdateSchema } from "@/lib/schemas/contact.schema";
 import type { ContactSections } from "@/lib/types/contact";
 import type { ActionResult } from "@/lib/types/content";
@@ -49,6 +49,6 @@ export async function syncContactSubmissionsToGoogleSheet(): Promise<ActionResul
     return { success: true, message: `${synced} submission${synced === 1 ? "" : "s"} synced to Google Sheets.`, data: { synced } };
   } catch (error) {
     console.error("Unable to sync contact submissions to Google Sheets", error);
-    return { success: false, message: "Could not sync submissions to Google Sheets." };
+    return { success: false, message: getGoogleSheetsErrorMessage(error) ?? "Could not sync submissions to Google Sheets." };
   }
 }
