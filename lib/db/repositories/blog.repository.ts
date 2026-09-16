@@ -30,5 +30,10 @@ export class BlogPostRepository extends BaseRepository<BlogPost> {
   async updateBySlug(slug: string, update: Pick<BlogPost, "title" | "excerpt" | "content" | "cover" | "tags" | "published" | "featured"> & { publishedAt?: Date; updatedBy: string }) {
     return this.updateOne({ slug }, { $set: { ...update, updatedAt: new Date() } });
   }
+  async deleteBySlugs(slugs: string[]) {
+    if (!slugs.length) return 0;
+    const result = await this.collection().deleteMany({ slug: { $in: slugs } });
+    return result.deletedCount;
+  }
 }
 export const blogContentRepository = new BlogContentRepository(); export const blogPostRepository = new BlogPostRepository();

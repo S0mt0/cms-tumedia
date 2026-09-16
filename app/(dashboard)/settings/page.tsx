@@ -28,14 +28,7 @@ export default async function SettingsPage() {
       <CmsPageHeader
         title="Settings"
         description="Manage CMS access and integration settings."
-        actions={
-          <Link
-            className="min-h-11 rounded-md border border-[#c5d4cd] px-4 py-2 text-sm font-semibold"
-            href="/settings/logs"
-          >
-            View session logs
-          </Link>
-        }
+        actions={<div className="flex flex-wrap gap-2"><Link className="min-h-11 rounded-md border border-[#c5d4cd] px-4 py-2 text-sm font-semibold" href="/settings/logs">Session logs</Link><Link className="min-h-11 rounded-md border border-[#c5d4cd] px-4 py-2 text-sm font-semibold" href="/settings/activity">Activity logs</Link></div>}
       />
       <AccessSettings
         emails={emails}

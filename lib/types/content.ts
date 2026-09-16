@@ -5,8 +5,8 @@ export type CmsDocumentBase = {
 };
 
 export type SeoFields = {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   ogImage?: string;
 };
 

@@ -26,6 +26,7 @@ import {
   FileText,
   SlidersHorizontal,
   X,
+  SearchCheck,
   type LucideIcon,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -42,6 +43,7 @@ type NavItem = { href: string; label: string; icon: LucideIcon };
 const pageItems: NavItem[] = [
   { href: "/site", label: "Site", icon: SlidersHorizontal },
   { href: "/legal", label: "Terms & privacy", icon: FileText },
+  { href: "/legal/seo", label: "Terms & privacy SEO", icon: SearchCheck },
   { href: "/settings", label: "Settings", icon: Settings2 },
 ];
 
@@ -54,12 +56,14 @@ const aboutSectionDefinitions = [
   { path: "global-capability", label: "Global capability" },
   { path: "audience-paths", label: "Audience paths" },
   { path: "closing", label: "Closing" },
+  { path: "seo", label: "SEO" },
 ] as const;
 
 const aboutIcons: Record<(typeof aboutSectionDefinitions)[number]["path"], LucideIcon> = {
   hero: Sparkles, "why-we-exist": Target, "our-perspective": Layers3,
   "our-difference": Route, "our-story": BookOpenText, "global-capability": Globe2,
   "audience-paths": GalleryVerticalEnd, closing: Flag,
+  seo: SearchCheck,
 };
 
 const contactSectionDefinitions = [
@@ -68,6 +72,7 @@ const contactSectionDefinitions = [
   { path: "next-steps", label: "What happens next", icon: Route },
   { path: "submissions", label: "Submissions", icon: MessagesSquare },
   { path: "info", label: "Info", icon: PhoneCall },
+  { path: "seo", label: "SEO", icon: SearchCheck },
 ] as const;
 const joinSectionDefinitions = [
   { path: "hero", label: "Hero", icon: Sparkles },
@@ -75,14 +80,16 @@ const joinSectionDefinitions = [
   { path: "next-steps", label: "What happens next", icon: Route },
   { path: "faq", label: "FAQ", icon: MessageCircleQuestion },
   { path: "submissions", label: "Submissions", icon: MessagesSquare },
+  { path: "seo", label: "SEO", icon: SearchCheck },
 ] as const;
 const blogSectionDefinitions = [
   { path: "hero", label: "Hero", icon: Sparkles },
   { path: "manage", label: "Manage posts", icon: BookOpenText },
+  { path: "seo", label: "SEO", icon: SearchCheck },
 ] as const;
-const industriesNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "introduction", label: "Introduction", icon: Target }, { path: "manage", label: "Industry directory", icon: Layers3 }] as const;
-const workNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "collection", label: "Campaign reels", icon: GalleryVerticalEnd }, { path: "process", label: "Process", icon: Route }, { path: "faq", label: "FAQ", icon: MessageCircleQuestion }, { path: "invitation", label: "Invitation", icon: Flag }] as const;
-const servicesNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "overview", label: "Overview", icon: Layers3 }, { path: "system", label: "Connected system", icon: Route }, { path: "deep-dives", label: "Deep dives", icon: BookOpenText }, { path: "process", label: "Process", icon: Target }, { path: "industries", label: "Industries", icon: Globe2 }, { path: "faq", label: "FAQ", icon: MessageCircleQuestion }, { path: "closing", label: "Final invitation", icon: Flag }] as const;
+const industriesNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "introduction", label: "Introduction", icon: Target }, { path: "manage", label: "Industry directory", icon: Layers3 }, { path: "seo", label: "SEO", icon: SearchCheck }] as const;
+const workNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "collection", label: "Campaign reels", icon: GalleryVerticalEnd }, { path: "process", label: "Process", icon: Route }, { path: "faq", label: "FAQ", icon: MessageCircleQuestion }, { path: "invitation", label: "Invitation", icon: Flag }, { path: "seo", label: "SEO", icon: SearchCheck }] as const;
+const servicesNavigation = [{ path: "hero", label: "Hero", icon: Sparkles }, { path: "overview", label: "Overview", icon: Layers3 }, { path: "system", label: "Connected system", icon: Route }, { path: "deep-dives", label: "Deep dives", icon: BookOpenText }, { path: "process", label: "Process", icon: Target }, { path: "industries", label: "Industries", icon: Globe2 }, { path: "faq", label: "FAQ", icon: MessageCircleQuestion }, { path: "closing", label: "Final invitation", icon: Flag }, { path: "seo", label: "SEO", icon: SearchCheck }] as const;
 
 const landingIcons: Record<string, LucideIcon> = {
   hero: Sparkles, positioning: Target, "our-approach": Route, "creator-network": GalleryVerticalEnd,
@@ -236,6 +243,7 @@ function LandingNavigation({
             onNavigate={onNavigate}
           />
         ))}
+        <NavLink item={{ href: "/landing/seo", label: "SEO", icon: SearchCheck }} pathname={pathname} onNavigate={onNavigate} />
       </ul>
     </section>
   );

@@ -23,6 +23,7 @@ INFRA_TIMEOUT ?= 60
 	docker-logs-redis \
 	ensure-infra \
 	db-reset \
+	db-migrate-seo \
 	dev \
 	dev-frontend \
 	dev-all \
@@ -93,6 +94,9 @@ ensure-infra: ## Start missing local services and wait for MongoDB/Redis readine
 
 db-reset: ## Drop the configured MongoDB database (destructive).
 	pnpm db:reset
+
+db-migrate-seo: ## Add missing SEO objects to every CMS page document.
+	pnpm db:migrate-seo
 
 dev: ensure-infra ## Ensure local infrastructure is ready, then start the CMS development server.
 	pnpm dev --port $(CMS_PORT)

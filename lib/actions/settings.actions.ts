@@ -9,6 +9,7 @@ import { isEnvironmentAdmin } from "@/lib/auth/allowlist";
 import { getDatabase } from "@/lib/db/config";
 import { adminLogRepository } from "@/lib/db/repositories/admin-log.repository";
 import { getGoogleSheetsAccessMessage, verifyGoogleSpreadsheetAccess } from "@/lib/services/google-sheets.service";
+import { recordCmsActivity } from "@/lib/actions/activity-log";
 import { adminEmailSchema, googleSheetsSettingsSchema, mailServiceSettingsSchema } from "@/lib/schemas/settings.schema";
 import type { ActionResult } from "@/lib/types/content";
 
@@ -22,6 +23,7 @@ export async function saveGoogleSheetsSettings(input: unknown): Promise<ActionRe
     return { success: false, message: error instanceof Error && error.message === getGoogleSheetsAccessMessage() ? error.message : "Could not verify access to that Google spreadsheet." };
   }
   await settingsRepository.setGoogleSheetsSpreadsheetId(parsed.data.spreadsheetId, session.user.id);
+  void recordCmsActivity(session.user, "updated_settings", "Google Sheets integration");
   revalidatePath("/settings");
   return { success: true, message: "Google Sheets settings saved." };
 }
@@ -37,6 +39,7 @@ export async function saveMailServiceSettings(input: unknown): Promise<ActionRes
     };
   }
   await settingsRepository.setMailServiceSettings(parsed.data, session.user.id);
+  void recordCmsActivity(session.user, "updated_settings", "Mail sender");
   revalidatePath("/settings");
   return { success: true, message: "Mail sender settings saved." };
 }

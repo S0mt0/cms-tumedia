@@ -10,6 +10,7 @@ import {
   landingSectionSchemas,
   landingUpdateSchema,
 } from "@/lib/schemas/landing.schema";
+import { recordCmsActivity } from "@/lib/actions/activity-log";
 
 export async function updateLandingSection(
   input: unknown
@@ -47,6 +48,7 @@ export async function updateLandingSection(
 
   await invalidateCache(cacheKeys.page("landing"));
   const section = getLandingSectionDefinition(parsed.data.section);
+  void recordCmsActivity(session.user, "updated_content", `Landing / ${section?.path ?? parsed.data.section}`);
   revalidatePath(`/landing/${section?.path ?? parsed.data.section}`);
   revalidatePath("/landing");
   return { success: true, message: "Section saved." };

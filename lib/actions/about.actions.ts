@@ -11,6 +11,7 @@ import {
   aboutUpdateSchema,
 } from "@/lib/schemas/about.schema";
 import type { AboutSections } from "@/lib/types/about";
+import { recordCmsActivity } from "@/lib/actions/activity-log";
 
 const paths = {
   hero: "hero",
@@ -68,6 +69,7 @@ export async function updateAboutSection(
   );
 
   await invalidateCache(cacheKeys.page("about"));
+  void recordCmsActivity(session.user, "updated_content", `About / ${paths[parsed.data.section]}`);
   revalidatePath(`/about/${paths[parsed.data.section]}`);
   revalidatePath("/about");
   return { success: true, message: "Section saved." };
