@@ -1,4 +1,5 @@
 import { CmsPageHeader } from "@/components/common/cms-page-header";
+import { PageSeoEditor } from "@/components/forms/page-seo-editor";
 import { legalRepository } from "@/lib/db/repositories/legal.repository";
 import { LegalEditor } from "./_components/legal-editor";
-export default async function LegalPage() { const content = await legalRepository.get(); return <div className="space-y-6"><CmsPageHeader title="Terms & privacy" description="Manage the legal documents published on the public site." /><LegalEditor initial={{ terms: content.terms, privacy: content.privacy }} /></div>; }
+export default async function LegalPage() { const content = await legalRepository.get(); const frontend = process.env.FRONTEND_BASE_URL ?? "http://localhost:3001"; return <div className="space-y-6"><CmsPageHeader title="Terms & privacy" description="Manage the legal documents and search metadata published on the public site." /><LegalEditor initial={{ terms: content.terms, privacy: content.privacy }} /><section className="border-t border-[#d7e1dc] pt-6"><div className="mb-5"><h2 className="text-xl font-bold text-[#163a37]">SEO</h2><p className="mt-1 text-sm text-[#61746d]">Optional search and sharing metadata for the legal pages.</p></div><PageSeoEditor page="legal" initial={content.seo} mediaPreviewBaseUrl={frontend} /></section></div>; }
