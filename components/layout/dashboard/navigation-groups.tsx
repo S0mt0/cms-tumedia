@@ -34,6 +34,7 @@ export function NavigationGroup({
   );
   const id = useId();
   const selected = pathname.startsWith(`/${base}`);
+  const showCollapsedActiveState = selected && !open;
   return (
     <section className={className ?? "mt-3"}>
       <Button
@@ -44,12 +45,12 @@ export function NavigationGroup({
         aria-controls={id}
         className={cn(
           "relative min-h-11 w-full justify-between rounded-md px-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-[#1d8f7a]",
-          selected
+          showCollapsedActiveState
             ? "!bg-[#155e58] !text-white hover:!bg-[#155e58] hover:!text-white aria-expanded:!bg-[#155e58] aria-expanded:!text-white"
             : "text-[#52605d] hover:bg-white/70 hover:text-[#163a37]"
         )}
       >
-        {selected ? (
+        {showCollapsedActiveState ? (
           <span className="absolute bottom-2 left-0 top-2 w-0.75 rounded-sm bg-[#f3c26b]" />
         ) : null}
         <span className="flex items-center gap-3">
