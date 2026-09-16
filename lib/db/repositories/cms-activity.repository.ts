@@ -3,6 +3,7 @@ import { BaseRepository } from "@/lib/db/repositories/base.repository";
 export type CmsActivityLog = {
   adminId: string;
   email: string;
+  performer: string;
   action: string;
   target: string;
   createdAt: Date;

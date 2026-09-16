@@ -69,7 +69,7 @@ export async function updateAboutSection(
   );
 
   await invalidateCache(cacheKeys.page("about"));
-  void recordCmsActivity(session.user, "updated_content", `About / ${paths[parsed.data.section]}`);
+  await recordCmsActivity(session.user, "updated_content", `About / ${paths[parsed.data.section]}`);
   revalidatePath(`/about/${paths[parsed.data.section]}`);
   revalidatePath("/about");
   return { success: true, message: "Section saved." };

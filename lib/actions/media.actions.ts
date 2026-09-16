@@ -1,6 +1,7 @@
 "use server";
 
 import { isAdminEmail } from "@/lib/auth/allowlist";
+import { recordCmsActivity } from "@/lib/actions/activity-log";
 import { requireAdminSession } from "@/lib/auth/guards";
 import { presignUploadSchema } from "@/lib/schemas/media.schema";
 import { createPresignedUpload } from "@/lib/services/r2.service";
@@ -26,6 +27,7 @@ export async function createMediaUploadTarget(
 
   try {
     const data = await createPresignedUpload(parsed.data);
+    await recordCmsActivity(session.user, "prepared_media_upload", parsed.data.filename);
     return { success: "Upload ready.", data };
   } catch (error) {
     console.error("Could not create a media upload target.", { error });

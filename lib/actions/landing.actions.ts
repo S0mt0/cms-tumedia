@@ -48,7 +48,7 @@ export async function updateLandingSection(
 
   await invalidateCache(cacheKeys.page("landing"));
   const section = getLandingSectionDefinition(parsed.data.section);
-  void recordCmsActivity(session.user, "updated_content", `Landing / ${section?.path ?? parsed.data.section}`);
+  await recordCmsActivity(session.user, "updated_content", `Landing / ${section?.path ?? parsed.data.section}`);
   revalidatePath(`/landing/${section?.path ?? parsed.data.section}`);
   revalidatePath("/landing");
   return { success: true, message: "Section saved." };

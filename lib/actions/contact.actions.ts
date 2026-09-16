@@ -21,7 +21,7 @@ export async function updateContactSection(input: unknown): Promise<ActionResult
   if (!data.success) return { success: false, message: "Please correct the section fields.", fieldErrors: data.error.flatten().fieldErrors };
   await contactRepository.updateSection(parsed.data.section, data.data as ContactSections[typeof parsed.data.section], session.user.id);
   await invalidateCache(cacheKeys.page("contact"));
-  void recordCmsActivity(session.user, "updated_content", `Contact / ${paths[parsed.data.section]}`);
+  await recordCmsActivity(session.user, "updated_content", `Contact / ${paths[parsed.data.section]}`);
   revalidatePath(`/contact/${paths[parsed.data.section]}`);
   revalidatePath("/contact");
   return { success: true, message: "Section saved." };
@@ -31,7 +31,7 @@ export async function deleteContactSubmissions(ids: string[]): Promise<ActionRes
   const session = await requireAdminSession();
   if (!ids.length) return { success: false, message: "Choose at least one submission." };
   await contactSubmissionRepository.deleteMany(ids);
-  void recordCmsActivity(session.user, "deleted_submissions", `Contact submissions (${ids.length})`);
+  await recordCmsActivity(session.user, "deleted_submissions", `Contact submissions (${ids.length})`);
   revalidatePath("/contact/submissions");
   return { success: true, message: `${ids.length} submission${ids.length === 1 ? "" : "s"} deleted.` };
 }
@@ -39,7 +39,7 @@ export async function deleteContactSubmissions(ids: string[]): Promise<ActionRes
 export async function markContactSubmissionRead(id: string): Promise<ActionResult> {
   const session = await requireAdminSession();
   await contactSubmissionRepository.markRead(id);
-  void recordCmsActivity(session.user, "marked_submission_read", "Contact submission");
+  await recordCmsActivity(session.user, "marked_submission_read", "Contact submission");
   revalidatePath("/contact/submissions");
   return { success: true, message: "Submission marked as read." };
 }
@@ -49,7 +49,7 @@ export async function syncContactSubmissionsToGoogleSheet(): Promise<ActionResul
 
   try {
     const synced = await syncContactSheetRows(await contactSubmissionRepository.listAll());
-    void recordCmsActivity(session.user, "synced_submissions", `Contact submissions (${synced})`);
+    await recordCmsActivity(session.user, "synced_submissions", `Contact submissions (${synced})`);
     revalidatePath("/contact/submissions");
     return { success: true, message: `${synced} submission${synced === 1 ? "" : "s"} synced to Google Sheets.`, data: { synced } };
   } catch (error) {

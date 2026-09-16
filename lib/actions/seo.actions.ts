@@ -35,7 +35,7 @@ export async function updatePageSeo(input: unknown): Promise<ActionResult> {
   if (!result.matchedCount) return { success: false, message: "This page content has not been initialised yet." };
 
   await invalidateCache(cacheKeys.page(definition.cache));
-  void recordCmsActivity(session.user, "updated_seo", parsed.data.page);
+  await recordCmsActivity(session.user, "updated_seo", parsed.data.page);
   revalidatePath(`/${parsed.data.page}/seo`);
   revalidatePath(definition.publicPath);
   if (parsed.data.page === "legal") revalidatePath("/terms");
